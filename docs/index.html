@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tarosec brings evidence-backed security workflows to your coding agent.">
+  <meta name="theme-color" content="#0a1744">
+  <title>Tarosec | Security work, with evidence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="header wrap">
+    <a class="brand" href="#top" aria-label="Tarosec home"><img src="assets/tarosec.png" alt="Tarosec"></a>
+    <nav aria-label="Main navigation">
+      <a href="#workflows">Workflows</a><a href="#how-it-works">How it works</a><a href="#install">Install</a>
+    </nav>
+    <a class="nav-github" href="https://github.com/refactorroom/tarosec">GitHub <span aria-hidden="true">↗</span></a>
+  </header>
+  <main id="top">
+    <section class="hero wrap">
+      <div class="hero-copy">
+        <p class="eyebrow"><span></span> Security skills for coding agents</p>
+        <h1>Security work,<br><em>grounded in evidence.</em></h1>
+        <p class="intro">Audit code, investigate signals, and validate detections with a security toolkit built for your AI coding agent.</p>
+        <div class="actions"><a class="button primary" href="#install">Get started <span aria-hidden="true">↗</span></a><a class="button secondary" href="https://github.com/refactorroom/tarosec">Explore on GitHub</a></div>
+        <p class="hero-note">Open source <span>•</span> Offline-first <span>•</span> Agent Skills compatible</p>
+      </div>
+      <div class="terminal" aria-label="Example Tarosec simulation">
+        <div class="terminal-top"><div class="dots"><i></i><i></i><i></i></div><span>tarosec / simulation</span><span>local</span></div>
+        <div class="terminal-body">
+          <p><span class="prompt">$</span> tarosec simulate suspicious-login</p>
+          <div class="term-separator"></div>
+          <p class="term-muted">Scenario <span>auth.suspicious-login</span></p>
+          <p class="term-muted">Mode <span>synthetic</span></p>
+          <p class="term-muted">Events generated <span>5</span></p>
+          <div class="term-separator"></div>
+          <p class="term-label">DETECTION OUTCOME</p>
+          <p class="outcome"><span></span> Inconclusive</p>
+          <p class="term-small">No independent rule observations supplied.</p>
+          <p class="term-small">Evidence and report saved locally.</p>
+        </div>
+        <div class="terminal-foot">Example using a bundled synthetic scenario</div>
+      </div>
+    </section>
+    <div class="ticker"><div class="wrap ticker-inner"><span>Assess</span><b>✳</b><span>Defend</span><b>✳</b><span>Validate</span><b>✳</b><span>Improve</span></div></div>
+    <section id="workflows" class="section wrap">
+      <div class="section-heading"><div><p class="section-label">The toolkit</p><h2>One entry point.<br>Five ways to work.</h2></div><p>Start with <code>$tarosec</code>. Choose a specialist when you know what you need.</p></div>
+      <div class="workflow-list">
+        <a href="https://github.com/refactorroom/tarosec/tree/main/skills/tarosec-audit"><span class="workflow-name">Audit</span><span>Review source code, dependencies, CI/CD, and agent integrations.</span><span class="workflow-link">Explore ↗</span></a>
+        <a href="https://github.com/refactorroom/tarosec/tree/main/skills/tarosec-red"><span class="workflow-name">Red</span><span>Map assets and review supplied assessment evidence.</span><span class="workflow-link">Explore ↗</span></a>
+        <a href="https://github.com/refactorroom/tarosec/tree/main/skills/tarosec-blue"><span class="workflow-name">Blue</span><span>Investigate logs, hunt for signals, and examine detections.</span><span class="workflow-link">Explore ↗</span></a>
+        <a href="https://github.com/refactorroom/tarosec/tree/main/skills/tarosec-purple"><span class="workflow-name">Purple</span><span>Compare expected behavior with observed defensive evidence.</span><span class="workflow-link">Explore ↗</span></a>
+        <a href="https://github.com/refactorroom/tarosec/tree/main/skills/tarosec-simulate"><span class="workflow-name">Simulate</span><span>Generate and replay reproducible synthetic security events.</span><span class="workflow-link">Explore ↗</span></a>
+      </div>
+    </section>
+    <section id="how-it-works" class="approach">
+      <div class="wrap approach-grid"><div><p class="section-label">A practical approach</p><h2>Follow the evidence.<br>Keep the context.</h2></div><div class="approach-copy"><p>Tarosec helps your agent document what it saw, what it can conclude, and what still needs verification.</p><div class="principles"><div><strong>Start locally</strong><p>Review supplied source, records, and telemetry with read-only workflows.</p></div><div><strong>Keep results honest</strong><p>Separate observations from interpretation and mark missing evidence clearly.</p></div><div><strong>Validate the signal</strong><p>Compare synthetic scenarios with recorded detections and retain evidence references.</p></div></div></div></div>
+    </section>
+    <section id="install" class="section wrap install">
+      <div><p class="section-label">Get started</p><h2>Bring Tarosec<br>into your workflow.</h2><p>Install the complete suite with the Skills CLI, then ask your agent to use Tarosec on your project.</p><a class="text-link" href="https://github.com/refactorroom/tarosec/blob/main/docs/install.md">Read installation guide ↗</a></div>
+      <div class="install-panel"><div class="install-label"><span>Install all skills</span><button class="copy" type="button" data-copy="npx skills add refactorroom/tarosec">Copy</button></div><code>npx skills add refactorroom/tarosec</code><div class="install-divider"></div><div class="install-label"><span>In your coding agent</span></div><code>$tarosec ./project</code><p>Requires Node.js for installation. Python 3.10+ runs the included helpers.</p></div>
+    </section>
+  </main>
+  <footer><div class="wrap footer-inner"><div><strong>Tarosec</strong><p>Assess. Defend. Validate. Improve.</p></div><div class="footer-links"><a href="https://github.com/refactorroom/tarosec">GitHub</a><a href="https://github.com/refactorroom/tarosec/blob/main/SECURITY.md">Security</a><a href="https://github.com/refactorroom/tarosec/blob/main/LICENSE">MIT License</a></div></div></footer>
+</body>
+</html>

@@ -33,6 +33,28 @@ workflow. The existing specialists remain available for direct use.
 Use the modes as cues in an agent request. The deterministic Python helpers
 require Python 3.10 or later.
 
+## Install from GitHub
+
+Install all Tarosec skills in the current project with the [Skills CLI](https://github.com/vercel-labs/skills):
+
+```bash
+npx skills add refactorroom/tarosec
+```
+
+Select individual skills or install for specific agents:
+
+```bash
+npx skills add refactorroom/tarosec --skill tarosec --skill tarosec-simulate
+npx skills add refactorroom/tarosec --skill tarosec-audit --agent codex claude-code
+npx skills add refactorroom/tarosec --list
+npx skills list
+```
+
+Add `--global` when installing for your user account. After installation, start
+a new agent session and request `$tarosec ./project` or `$tarosec simulate suspicious-login`.
+The [Skills directory](https://skills.sh/docs/faq) discovers public skills from
+installation activity.
+
 ## Install from a local checkout
 
 Run from the project where you want to use Tarosec. Replace the source path with
