@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "tarosec.finding/v1",
+  "id": "PURPLE-EX-2026-11-LAB-01-S2",
+  "producer": "tarosec-purple",
+  "title": "Domain Admins enumeration not detected on workstation",
+  "severity": "Medium",
+  "severityRationale": "Discovery precedes privilege escalation; telemetry exists, so the fix is a rule change, not a sensor rollout.",
+  "confidence": "Confirmed",
+  "status": "Detection gap",
+  "claimStrength": "lab-reproduction",
+  "location": "EX-2026-11-LAB-01/S2 (lab-win-02)",
+  "invariant": "Domain admin group enumeration from a workstation raises SIEM-DISC-DOMAIN-ADMINS within 600s.",
+  "observed": "Process telemetry recorded; rule did not fire for lab-win-02. Same rule fired for lab-dc-01 only.",
+  "impact": "Early-stage discovery on endpoints goes unalerted.",
+  "evidenceRefs": ["EV-RUN-S2", "EV-TEL-S2", "EV-ALERT-EXPORT"],
+  "remediation": "Extend SIEM-DISC-DOMAIN-ADMINS to endpoint process events (net.exe/net1.exe group /domain).",
+  "regressionCheck": "Retest S2 in tarosec-purple retest mode; expect Detected.",
+  "mappings": [{"framework": "ATTACK", "version": "v17", "id": "T1087.002", "name": "Account Discovery: Domain Account"}]
+}

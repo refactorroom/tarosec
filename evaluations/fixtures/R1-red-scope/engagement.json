@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "tarosec.engagement/v1",
+  "id": "ENG-ACME-2026-11",
+  "name": "ACME web app external test",
+  "environment": "staging",
+  "authorization": {"reference": "SOW-2026-118", "authorizedBy": "ACME CISO", "note": "Signed statement of work; operator must confirm current authority."},
+  "scope": {
+    "targets": [{"id": "T1", "kind": "origin", "value": "https://app.staging.acme.test", "allowedAddresses": ["192.0.2.10"]}],
+    "exclusions": ["https://admin.staging.acme.test", "192.0.2.0/28 except 192.0.2.10"]
+  },
+  "techniques": {"allowed": ["passive-recon", "authenticated-web-testing"], "forbidden": ["denial-of-service", "credential-attacks", "social-engineering"]},
+  "window": {"start": "2026-11-16T09:00:00", "end": "2026-11-20T18:00:00", "timezone": "Asia/Bangkok"},
+  "budgets": {"maxRequestsPerSecond": 5, "maxTotalRequests": 20000},
+  "stopConditions": ["Any response from an excluded host", "Real customer data observed", "Service degradation"]
+}

@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "tarosec.exercise/v1",
+  "id": "EX-2026-11-LAB-03",
+  "name": "Credential access exercise plan",
+  "engagementRef": "ENG-LAB-07",
+  "environment": "laboratory",
+  "attackVersion": "v17",
+  "window": {
+    "start": "2026-11-12T09:00:00+07:00",
+    "end": "2026-11-12T11:00:00+07:00"
+  },
+  "steps": [
+    {
+      "id": "S1",
+      "technique": {
+        "id": "T1003.001",
+        "name": "Kerberoasting"
+      },
+      "description": "Request TGS tickets for service accounts with RC4 encryption",
+      "targetHost": "lab-win-01",
+      "expected": {
+        "telemetrySources": [
+          "edr-process",
+          "sysmon-10"
+        ],
+        "detections": [
+          "EDR-CRED-LSASS-ACCESS"
+        ],
+        "maxLatencySeconds": 300
+      }
+    },
+    {
+      "id": "S3",
+      "technique": {
+        "id": "T1558.003",
+        "name": "Steal or Forge Kerberos Tickets: Kerberoasting"
+      },
+      "description": "Request TGS for synthetic SPN svc-lab-sql",
+      "targetHost": "lab-win-02",
+      "expected": {
+        "telemetrySources": [
+          "dc-security-4769"
+        ],
+        "detections": [
+          "SIEM-KERB-RC4-TGS"
+        ],
+        "maxLatencySeconds": 600
+      }
+    }
+  ]
+}
