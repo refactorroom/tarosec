@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Generate synthetic event records or replay sanitized evidence for offline detection exercises.">
+  <title>Simulate workflow | Tarosec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header wrap">
+    <a class="brand" href="index.html"><img src="assets/tarosec.png" alt="Tarosec"></a>
+    <a class="nav-github" href="index.html#install">Install Tarosec</a>
+  </header>
+  <main class="wrap reference-page">
+    <a class="text-link" href="index.html#workflows">← All workflows</a>
+    <h1>Simulate</h1>
+    <p class="intro">Generate synthetic event records or replay sanitized evidence for offline detection exercises.</p>
+    <nav class="reference-nav" aria-label="Tarosec workflows"><a href="audit.html">Audit</a><a href="red.html">Red</a><a href="blue.html">Blue</a><a href="purple.html">Purple</a><a href="simulate.html" aria-current="page">Simulate</a></nav>
+    <article class="reference-content">
+      <section>
+        <h2>What to provide</h2>
+        <p>Choose suspicious login, web request indicators, or unusual file activity. For replay, supply a scenario definition and normalized JSON or NDJSON events.</p>
+      </section>
+      <section>
+        <h2>Modes</h2>
+        <dl>
+          <div><dt><code>list</code></dt><dd>Show the built-in scenario catalog.</dd></div>
+          <div><dt><code>synthetic</code></dt><dd>Generate reproducible event records from a built-in fixture.</dd></div>
+          <div><dt><code>replay</code></dt><dd>Normalize saved events and optionally assess a bound rule export.</dd></div>
+        </dl>
+      </section>
+      <section>
+        <h2>Workflow</h2>
+        <ol>
+          <li>Choose a built-in scenario or a local replay directory.</li>
+          <li>Run the simulator and review the generated event records and evidence hashes.</li>
+          <li>Use the exercise record with Purple to investigate the detection outcome.</li>
+        </ol>
+      </section>
+      <section>
+        <h2>Example agent request</h2>
+        <pre><code>$tarosec simulate suspicious-login</code></pre>
+        <h2>What to expect</h2>
+        <p>The sample produces five synthetic events and an Inconclusive detection outcome because independent rule observations are absent. It writes a report, structured results, and an exercise record.</p>
+      </section>
+    </article>
+  </main>
+  <footer><div class="wrap footer-inner"><strong>Tarosec</strong><div class="footer-links"><a href="index.html#workflows">Workflows</a><a href="index.html#install">Install</a></div></div></footer>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Compare expected defensive behavior with recorded exercise results.">
+  <title>Purple workflow | Tarosec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header wrap">
+    <a class="brand" href="index.html"><img src="assets/tarosec.png" alt="Tarosec"></a>
+    <a class="nav-github" href="index.html#install">Install Tarosec</a>
+  </header>
+  <main class="wrap reference-page">
+    <a class="text-link" href="index.html#workflows">← All workflows</a>
+    <h1>Purple</h1>
+    <p class="intro">Compare expected defensive behavior with recorded exercise results.</p>
+    <nav class="reference-nav" aria-label="Tarosec workflows"><a href="audit.html">Audit</a><a href="red.html">Red</a><a href="blue.html">Blue</a><a href="purple.html" aria-current="page">Purple</a><a href="simulate.html">Simulate</a></nav>
+    <article class="reference-content">
+      <section>
+        <h2>What to provide</h2>
+        <p>Provide the exercise record, expected telemetry and alerts, and observations from the exercise window.</p>
+      </section>
+      <section>
+        <h2>Modes</h2>
+        <dl>
+          <div><dt><code>plan / exercise</code></dt><dd>Define a benign exercise and its expected observations.</dd></div>
+          <div><dt><code>emulate</code></dt><dd>Work with prerecorded synthetic activity or a harmless offline test event.</dd></div>
+          <div><dt><code>validate</code></dt><dd>Classify each recorded step.</dd></div>
+          <div><dt><code>coverage</code></dt><dd>Summarize verified opportunities and outcomes.</dd></div>
+          <div><dt><code>retest</code></dt><dd>Compare original and new results by step ID after a change.</dd></div>
+        </dl>
+      </section>
+      <section>
+        <h2>Workflow</h2>
+        <ol>
+          <li>Separate evidence that a step ran from evidence that a control observed it.</li>
+          <li>Check the expected rule, attribution, and timing against the supplied observations.</li>
+          <li>Record an outcome and cite the evidence behind it.</li>
+        </ol>
+      </section>
+      <section>
+        <h2>Example agent request</h2>
+        <pre><code>$tarosec purple
+Compare my baseline exercise with its retest. Explain each outcome and cite the evidence IDs.</code></pre>
+        <h2>What to expect</h2>
+        <p>Per-step outcomes distinguish detection, late or partial detection, prevention, telemetry or detection gaps, inconclusive evidence, and steps that did not run.</p>
+      </section>
+    </article>
+  </main>
+  <footer><div class="wrap footer-inner"><strong>Tarosec</strong><div class="footer-links"><a href="index.html#workflows">Workflows</a><a href="index.html#install">Install</a></div></div></footer>
+</body>
+</html>

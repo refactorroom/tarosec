@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Map assets and review existing assessment evidence within a defined scope.">
+  <title>Red workflow | Tarosec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header wrap">
+    <a class="brand" href="index.html"><img src="assets/tarosec.png" alt="Tarosec"></a>
+    <a class="nav-github" href="index.html#install">Install Tarosec</a>
+  </header>
+  <main class="wrap reference-page">
+    <a class="text-link" href="index.html#workflows">← All workflows</a>
+    <h1>Red</h1>
+    <p class="intro">Map assets and review existing assessment evidence within a defined scope.</p>
+    <nav class="reference-nav" aria-label="Tarosec workflows"><a href="audit.html">Audit</a><a href="red.html" aria-current="page">Red</a><a href="blue.html">Blue</a><a href="purple.html">Purple</a><a href="simulate.html">Simulate</a></nav>
+    <article class="reference-content">
+      <section>
+        <h2>What to provide</h2>
+        <p>Provide the scope or engagement record, an asset inventory, and any prior observations or scanner reports.</p>
+      </section>
+      <section>
+        <h2>Modes</h2>
+        <dl>
+          <div><dt><code>recon</code></dt><dd>Summarize assets and exposed interfaces from supplied evidence.</dd></div>
+          <div><dt><code>scan</code></dt><dd>Review an existing scan and its metadata.</dd></div>
+          <div><dt><code>simulate</code></dt><dd>Interpret observations from a benign fixture.</dd></div>
+          <div><dt><code>bounty</code></dt><dd>Draft a sanitized report using the supplied program policy.</dd></div>
+          <div><dt><code>validate</code></dt><dd>Check whether evidence supports an existing finding.</dd></div>
+        </dl>
+      </section>
+      <section>
+        <h2>Workflow</h2>
+        <ol>
+          <li>Identify which assets are in scope, excluded, or unverified.</li>
+          <li>Compare assertions with supplied records and note gaps.</li>
+          <li>Summarize the assessment with source references and scope limits.</li>
+        </ol>
+      </section>
+      <section>
+        <h2>Example agent request</h2>
+        <pre><code>$tarosec red
+Review my asset inventory and engagement record. List in-scope, excluded, and unverified assets.</code></pre>
+        <h2>What to expect</h2>
+        <p>An offline assessment based on the supplied evidence. A scope record by itself does not grant permission to contact a target.</p>
+      </section>
+    </article>
+  </main>
+  <footer><div class="wrap footer-inner"><strong>Tarosec</strong><div class="footer-links"><a href="index.html#workflows">Workflows</a><a href="index.html#install">Install</a></div></div></footer>
+</body>
+</html>
