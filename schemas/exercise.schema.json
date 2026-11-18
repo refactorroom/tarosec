@@ -32,7 +32,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "technique", "description", "targetHost", "expected"],
+        "required": ["id", "description", "targetHost", "expected"],
         "properties": {
           "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"},
           "technique": {
@@ -65,6 +65,7 @@
             "properties": {
               "telemetrySources": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
               "detections": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+              "requireTelemetryForDetection": {"type": "boolean"},
               "maxLatencySeconds": {"type": "integer", "minimum": 0}
             }
           },

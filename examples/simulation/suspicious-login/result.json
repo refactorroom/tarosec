@@ -1,0 +1,53 @@
+{
+  "endedAt": "2026-01-01T00:00:20+00:00",
+  "engineVersion": "1.0.0",
+  "eventCount": 5,
+  "evidence": [
+    {
+      "id": "scenario",
+      "path": "scenario.json",
+      "sha256": "2e25de0a563791b6d45d36e7e2e3cd712ff592f20885bc7f3720057f55f47d39"
+    },
+    {
+      "id": "events",
+      "path": "events.json",
+      "sha256": "9e52a472161bbfcae4f07541cf279334a48905f46daaf2d0f87026f49ef854df"
+    },
+    {
+      "id": "exercise",
+      "path": "exercise.json",
+      "sha256": "e64cc7fbf9b2504e5d1be143e20582df40fde7d70b1ed18abfe53682bc03e95b"
+    }
+  ],
+  "execution": "completed",
+  "expectedEvents": [
+    "auth.failure",
+    "auth.success",
+    "session.source-changed",
+    "session.unusual"
+  ],
+  "expectedRules": [
+    "login-sequence"
+  ],
+  "limitations": [
+    "Events and rule observations are fixture data. Results apply to this evaluation pipeline.",
+    "A digest binds the observation export to the event bytes. Source authenticity is unverified."
+  ],
+  "mode": "synthetic",
+  "observedEvents": [
+    "auth.failure",
+    "auth.success",
+    "session.source-changed",
+    "session.unusual"
+  ],
+  "outcome": "inconclusive",
+  "reasons": [
+    "login-sequence: alert evidence missing, conflicting or unattributed",
+    "No independent defensive rule observations were supplied."
+  ],
+  "runId": "845bfeda2b4a5f0ce2347d8ba55eb5a505f5f8b3089a3821c0ecbf129c949c47",
+  "scenario": "auth.suspicious-login",
+  "scenarioVersion": "1.0.0",
+  "schemaVersion": "tarosec.simulation-result/v1",
+  "startedAt": "2026-01-01T00:00:00+00:00"
+}

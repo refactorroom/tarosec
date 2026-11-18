@@ -1,0 +1,76 @@
+{
+  "attackVersion": "unmapped",
+  "environment": "offline",
+  "id": "sim-845bfeda2b4a5f0ce2347d8ba55eb5a505f5f8b3089a3821c0ecbf129c949c47",
+  "limitations": [
+    "Events and rule observations are fixture data. Results apply to this evaluation pipeline.",
+    "A digest binds the observation export to the event bytes. Source authenticity is unverified."
+  ],
+  "name": "auth.suspicious-login",
+  "schemaVersion": "tarosec.exercise/v1",
+  "steps": [
+    {
+      "description": "Evaluate the recorded fixture",
+      "expected": {
+        "detections": [
+          "login-sequence"
+        ],
+        "maxLatencySeconds": 86400,
+        "requireTelemetryForDetection": true,
+        "telemetrySources": [
+          "auth.failure",
+          "auth.success",
+          "session.source-changed",
+          "session.unusual"
+        ]
+      },
+      "id": "fixture",
+      "results": {
+        "alerts": [],
+        "execution": {
+          "endedAt": "2026-01-01T00:00:20+00:00",
+          "evidenceRefs": [
+            "events"
+          ],
+          "startedAt": "2026-01-01T00:00:00+00:00",
+          "status": "executed"
+        },
+        "telemetry": [
+          {
+            "evidenceRefs": [
+              "events"
+            ],
+            "source": "auth.failure",
+            "status": "observed"
+          },
+          {
+            "evidenceRefs": [
+              "events"
+            ],
+            "source": "auth.success",
+            "status": "observed"
+          },
+          {
+            "evidenceRefs": [
+              "events"
+            ],
+            "source": "session.source-changed",
+            "status": "observed"
+          },
+          {
+            "evidenceRefs": [
+              "events"
+            ],
+            "source": "session.unusual",
+            "status": "observed"
+          }
+        ]
+      },
+      "targetHost": "fixture-host"
+    }
+  ],
+  "window": {
+    "end": "2026-01-01T00:00:20+00:00",
+    "start": "2026-01-01T00:00:00+00:00"
+  }
+}

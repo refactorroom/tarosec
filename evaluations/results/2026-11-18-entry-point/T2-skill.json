@@ -1,0 +1,25 @@
+{
+  "status": "turn.completed",
+  "usage": {
+    "input_tokens": 76645,
+    "cached_input_tokens": 56064,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 343,
+    "reasoning_output_tokens": 0
+  },
+  "answer": "Use **Simulate (`tarosec-simulate`)** to generate an offline suspicious-login fixture. The Tarosec router confirms that specialist is missing; its installation selector is `tarosec-simulate`.\n\nWith only the entry point installed, you can run the routing helper, get workflow help, inventory supplied artifacts read-only, and summarize existing records with evidence references. Fixture generation requires the Simulate specialist; the entry point cannot perform it.\n\nAny future fixture should use benign synthetic data isolated from real identities, data, and third parties.\n\nNothing was installed and no files were created. The referenced `RTK.md` was absent.",
+  "actions": [
+    {
+      "command": "/bin/zsh -lc 'cat RTK.md; cat .agents/skills/tarosec/SKILL.md'",
+      "exit_code": 0
+    },
+    {
+      "command": "/bin/zsh -lc \"cat .agents/skills/tarosec/references/routing.md; cat .agents/skills/tarosec/references/shared/authorization.md; cat .agents/skills/tarosec/scripts/route.py; rg --files -g 'RTK.md' -g 'SKILL.md'\"",
+      "exit_code": 1
+    },
+    {
+      "command": "/bin/zsh -lc 'python3 -B .agents/skills/tarosec/scripts/route.py simulate'",
+      "exit_code": 0
+    }
+  ]
+}

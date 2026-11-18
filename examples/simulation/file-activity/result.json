@@ -1,0 +1,53 @@
+{
+  "endedAt": "2026-01-01T00:00:20+00:00",
+  "engineVersion": "1.0.0",
+  "eventCount": 5,
+  "evidence": [
+    {
+      "id": "scenario",
+      "path": "scenario.json",
+      "sha256": "85061347f17c6aa69642f3a881afc34198aff7df00d203edcd8f420b822e3143"
+    },
+    {
+      "id": "events",
+      "path": "events.json",
+      "sha256": "d015c3efd4e6e08766aa946b16521c934f7f743a5dc24adca5a5624644978f66"
+    },
+    {
+      "id": "exercise",
+      "path": "exercise.json",
+      "sha256": "7150ad34c7e3eefe037fb6c40af1e7eae56f3020c9e8c11e099a1b5479be223f"
+    }
+  ],
+  "execution": "completed",
+  "expectedEvents": [
+    "file.changed",
+    "process.unfamiliar",
+    "file.change-burst",
+    "backup.warning"
+  ],
+  "expectedRules": [
+    "file-activity-review"
+  ],
+  "limitations": [
+    "Events and rule observations are fixture data. Results apply to this evaluation pipeline.",
+    "A digest binds the observation export to the event bytes. Source authenticity is unverified."
+  ],
+  "mode": "synthetic",
+  "observedEvents": [
+    "backup.warning",
+    "file.change-burst",
+    "file.changed",
+    "process.unfamiliar"
+  ],
+  "outcome": "inconclusive",
+  "reasons": [
+    "file-activity-review: alert evidence missing, conflicting or unattributed",
+    "No independent defensive rule observations were supplied."
+  ],
+  "runId": "e08bd4a7bcaf3b0319149cdb2a648d3d4c4157bb6de60e9491e92dc606e323c2",
+  "scenario": "endpoint.ransomware-behavior",
+  "scenarioVersion": "1.0.0",
+  "schemaVersion": "tarosec.simulation-result/v1",
+  "startedAt": "2026-01-01T00:00:00+00:00"
+}

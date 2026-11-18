@@ -27,11 +27,17 @@ def plan() -> list[tuple[Path, Path]]:
         for src in sorted((ROOT / "references").glob("*.md")):
             pairs.append((src, skill / "references" / "shared" / src.name))
         for src in sorted((ROOT / "schemas").glob("*.schema.json")):
+            if src.name.startswith(("simulation-", "scenario.")) and skill.name != "tarosec-simulate":
+                continue
             pairs.append((src, skill / "assets" / "schemas" / src.name))
         src = ROOT / "scripts" / "validate_record.py"
         pairs.append((src, skill / "scripts" / src.name))
         for name in ("LICENSE", "SOURCE_NOTICES.md"):
             pairs.append((ROOT / name, skill / name))
+    if (ROOT / "skills/tarosec-simulate/SKILL.md").is_file():
+        classifier = "scripts/classify_exercise.py"
+        pairs.append((ROOT / "skills/tarosec-purple" / classifier,
+                      ROOT / "skills/tarosec-simulate" / classifier))
     return pairs
 
 

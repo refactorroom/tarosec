@@ -1,0 +1,12 @@
+{
+  "status": "turn.completed",
+  "usage": {
+    "input_tokens": 17833,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 53,
+    "reasoning_output_tokens": 0
+  },
+  "answer": "Antivirus mainly detects and blocks malicious files or programs using signatures and behavioral analysis. Endpoint Detection and Response (EDR) continuously monitors device activity to detect broader attacks and helps security teams investigate and respond, such as by isolating a compromised device.",
+  "actions": []
+}

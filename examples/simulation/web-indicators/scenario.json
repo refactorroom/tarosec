@@ -1,0 +1,15 @@
+{
+  "expected": {
+    "events": [
+      "web.suspicious-pattern",
+      "web.access-denied",
+      "web.unusual-request"
+    ],
+    "rules": [
+      "web-pattern-review"
+    ]
+  },
+  "id": "web.attack-patterns",
+  "schemaVersion": "tarosec.scenario/v1",
+  "version": "1.0.0"
+}

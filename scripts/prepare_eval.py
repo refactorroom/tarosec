@@ -40,8 +40,14 @@ def main() -> int:
     shutil.copytree(FIXTURES / cases[a.case]["fixture"], dest)
     shutil.copyfile(dest / "TASK.md", dest / "PROMPT.md")
     if a.arm == "skill":
-        shutil.copytree(ROOT / "skills", dest / ".agents" / "skills",
-                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+        installed = cases[a.case].get("installedSkills")
+        skill_root = dest / ".agents" / "skills"
+        ignore = shutil.ignore_patterns("__pycache__", "*.pyc")
+        if installed is None:
+            shutil.copytree(ROOT / "skills", skill_root, ignore=ignore)
+        else:
+            for name in installed:
+                shutil.copytree(ROOT / "skills" / name, skill_root / name, ignore=ignore)
     print(dest)
     return 0
 

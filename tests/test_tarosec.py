@@ -34,9 +34,9 @@ def frontmatter(text):
 
 
 class SkillFormat(unittest.TestCase):
-    def test_four_p0_skills(self):
+    def test_packaged_skills(self):
         self.assertEqual([p.name for p in SKILLS],
-                         ["tarosec-audit", "tarosec-blue", "tarosec-purple", "tarosec-red"])
+                         ["tarosec", "tarosec-audit", "tarosec-blue", "tarosec-purple", "tarosec-red", "tarosec-simulate"])
 
     def test_frontmatter_matches_spec(self):
         for skill in SKILLS:

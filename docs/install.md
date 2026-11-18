@@ -5,6 +5,13 @@ Python 3.10 or later is only required for the included Python helpers.
 
 ## Project installation
 
+Use `--skill '*'` for the complete entry-point experience. This command installs
+the entry point and simulation without the other specialists.
+
+```bash
+npx skills add /path/to/tarosec --skill tarosec tarosec-simulate --agent codex claude-code --copy -y
+```
+
 ```bash
 npx skills@1.9.0 add /path/to/tarosec --list
 npx skills@1.9.0 add /path/to/tarosec --skill tarosec-purple --agent codex claude-code --copy -y
@@ -29,6 +36,11 @@ npx skills@1.9.0 add refactorroom/tarosec --list
 npx skills@1.9.0 add refactorroom/tarosec --skill tarosec-audit --agent codex -y
 npx skills@1.9.0 update --project
 ```
+
+Once the enhancement is available on the remote, select either new skill with
+`npx skills add refactorroom/tarosec --skill tarosec` or
+`npx skills add refactorroom/tarosec --skill tarosec-simulate`. The Skills CLI
+1.9.0 installation check for these two skills used the local source.
 
 For a local source, reinstall from the updated checkout. For an intentional
 user-level installation, add `--global` to `add`, `list`, `update`, or `remove`.

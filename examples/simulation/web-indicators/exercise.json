@@ -1,0 +1,68 @@
+{
+  "attackVersion": "unmapped",
+  "environment": "offline",
+  "id": "sim-847bcb66f47262e6baa2f8dddbb09b0db49489d67e61e93c74eeae8c6919ed19",
+  "limitations": [
+    "Events and rule observations are fixture data. Results apply to this evaluation pipeline.",
+    "A digest binds the observation export to the event bytes. Source authenticity is unverified."
+  ],
+  "name": "web.attack-patterns",
+  "schemaVersion": "tarosec.exercise/v1",
+  "steps": [
+    {
+      "description": "Evaluate the recorded fixture",
+      "expected": {
+        "detections": [
+          "web-pattern-review"
+        ],
+        "maxLatencySeconds": 86400,
+        "requireTelemetryForDetection": true,
+        "telemetrySources": [
+          "web.suspicious-pattern",
+          "web.access-denied",
+          "web.unusual-request"
+        ]
+      },
+      "id": "fixture",
+      "results": {
+        "alerts": [],
+        "execution": {
+          "endedAt": "2026-01-01T00:00:10+00:00",
+          "evidenceRefs": [
+            "events"
+          ],
+          "startedAt": "2026-01-01T00:00:00+00:00",
+          "status": "executed"
+        },
+        "telemetry": [
+          {
+            "evidenceRefs": [
+              "events"
+            ],
+            "source": "web.access-denied",
+            "status": "observed"
+          },
+          {
+            "evidenceRefs": [
+              "events"
+            ],
+            "source": "web.suspicious-pattern",
+            "status": "observed"
+          },
+          {
+            "evidenceRefs": [
+              "events"
+            ],
+            "source": "web.unusual-request",
+            "status": "observed"
+          }
+        ]
+      },
+      "targetHost": "fixture-host"
+    }
+  ],
+  "window": {
+    "end": "2026-01-01T00:00:10+00:00",
+    "start": "2026-01-01T00:00:00+00:00"
+  }
+}

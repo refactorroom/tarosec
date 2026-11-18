@@ -1,0 +1,27 @@
+[
+  {
+    "offsetSeconds": 0,
+    "synthetic": true,
+    "type": "file.changed"
+  },
+  {
+    "offsetSeconds": 5,
+    "synthetic": true,
+    "type": "file.changed"
+  },
+  {
+    "offsetSeconds": 10,
+    "synthetic": true,
+    "type": "process.unfamiliar"
+  },
+  {
+    "offsetSeconds": 15,
+    "synthetic": true,
+    "type": "file.change-burst"
+  },
+  {
+    "offsetSeconds": 20,
+    "synthetic": true,
+    "type": "backup.warning"
+  }
+]

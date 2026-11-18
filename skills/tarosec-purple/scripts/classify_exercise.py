@@ -102,6 +102,11 @@ def classify_step(step: dict) -> tuple[str, list[str]]:
             delay = max(0.0, (first - ended).total_seconds())
             any_late |= delay > budget
             reasons.append(f"{rule}: {delay:g}s post-execution delay (budget {budget}s)")
+        if expected.get("requireTelemetryForDetection"):
+            missing = [source for source in expected["telemetrySources"] if
+                       {row["status"] for row in res.get("telemetry", []) if row["source"] == source} != {"observed"}]
+            if missing:
+                return "Partially detected", reasons + ["Unconfirmed expected telemetry: " + ", ".join(missing)]
         if len(matched) != len(expected_rules):
             return "Partially detected", reasons
         return ("Detected (late)" if any_late else "Detected"), reasons
@@ -151,13 +156,13 @@ def main(argv: list[str]) -> int:
         observations = [results.get("execution", {}), *results.get("telemetry", []),
                         *results.get("alerts", [])]
         evidence_refs = list(dict.fromkeys(ref for row in observations for ref in row.get("evidenceRefs", [])))
-        rows.append({"step": step["id"], "technique": step["technique"]["id"],
+        rows.append({"step": step["id"], "technique": step.get("technique", {}).get("id"),
                      "outcome": outcome, "reasons": reasons, "evidenceRefs": evidence_refs})
     if "--json" in argv:
         print(json.dumps({"exercise": exercise["id"], "steps": rows}, indent=2))
     else:
         for r in rows:
-            print(f"{r['step']}\t{r['technique']}\t{r['outcome']}\t{'; '.join(r['reasons'])}")
+            print(f"{r['step']}\t{r['technique'] or 'unmapped'}\t{r['outcome']}\t{'; '.join(r['reasons'])}")
     return 0
 
 

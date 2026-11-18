@@ -1,0 +1,27 @@
+[
+  {
+    "offsetSeconds": 0,
+    "synthetic": true,
+    "type": "auth.failure"
+  },
+  {
+    "offsetSeconds": 5,
+    "synthetic": true,
+    "type": "auth.failure"
+  },
+  {
+    "offsetSeconds": 10,
+    "synthetic": true,
+    "type": "auth.success"
+  },
+  {
+    "offsetSeconds": 15,
+    "synthetic": true,
+    "type": "session.source-changed"
+  },
+  {
+    "offsetSeconds": 20,
+    "synthetic": true,
+    "type": "session.unusual"
+  }
+]

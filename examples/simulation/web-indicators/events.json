@@ -1,0 +1,17 @@
+[
+  {
+    "offsetSeconds": 0,
+    "synthetic": true,
+    "type": "web.suspicious-pattern"
+  },
+  {
+    "offsetSeconds": 5,
+    "synthetic": true,
+    "type": "web.access-denied"
+  },
+  {
+    "offsetSeconds": 10,
+    "synthetic": true,
+    "type": "web.unusual-request"
+  }
+]

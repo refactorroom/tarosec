@@ -1,10 +1,26 @@
 # Tarosec
 
+![Tarosec dog mascot and wordmark](design/tarosec-dog-logo-concept.png)
+
 **Assess. Defend. Validate. Improve.**
 
 Tarosec is an offline cybersecurity skill suite for developers, security
 reviewers, and detection engineers using AI coding agents. It helps agents turn
 source code, assessment records, and telemetry into evidence-backed findings.
+
+## Start with `$tarosec`
+
+Install the suite using the local checkout commands below, then enter one of
+these requests in your coding agent.
+
+- `$tarosec ./project` starts a read-only source and configuration review.
+- `$tarosec blue ./logs` investigates supplied telemetry.
+- `$tarosec simulate suspicious-login` generates a synthetic fixture and report.
+- `$tarosec verify ./case` selects Audit or Purple based on the supplied evidence.
+- `$tarosec help` lists workflows and explains any missing specialists.
+
+The entry point checks which specialists are installed before choosing a
+workflow. The existing specialists remain available for direct use.
 
 | Skill | Use it for | Modes |
 | --- | --- | --- |
@@ -12,6 +28,7 @@ source code, assessment records, and telemetry into evidence-backed findings.
 | [Tarosec Red](skills/tarosec-red/SKILL.md) | Review scope, inventory exposed assets, and triage supplied assessment results | `recon`, `scan`, `simulate`, `bounty`, `validate` |
 | [Tarosec Blue](skills/tarosec-blue/SKILL.md) | Investigate supplied telemetry and design or verify detection logic | `hunt`, `triage`, `logs`, `detect`, `verify`, `monitor` |
 | [Tarosec Purple](skills/tarosec-purple/SKILL.md) | Compare recorded exercise steps with expected telemetry and alerts | `plan`, `exercise`, `emulate`, `validate`, `coverage`, `retest` |
+| [Tarosec Simulate](skills/tarosec-simulate/SKILL.md) | Generate controlled event records or replay sanitized evidence | `list`, `synthetic`, `replay` |
 
 Use the modes as cues in an agent request. The deterministic Python helpers
 require Python 3.10 or later.
@@ -33,6 +50,17 @@ checked locally with Vercel Skills 1.9.0. For a session-only Claude Code plugin,
 use `claude --plugin-dir /path/to/tarosec`. See [installation and troubleshooting](docs/install.md).
 
 ## Try it offline
+
+Run the helper from this checkout to reproduce the suspicious login demo. Choose
+a fresh directory for `./login-report`.
+
+```bash
+python3 -B skills/tarosec-simulate/scripts/simulate.py synthetic suspicious-login --output ./login-report
+```
+
+The captured run generated five events and returned **Inconclusive** because it
+had no independent rule observations. The [run report](examples/simulation/suspicious-login/report.md)
+links the assessment to hashed evidence. See the [catalog and replay guide](docs/simulation.md).
 
 Open this checkout with the desired skill installed, then give the agent one
 of these requests. Fixture inputs are under [evaluations](evaluations/fixtures).

@@ -1,0 +1,16 @@
+{
+  "expected": {
+    "events": [
+      "file.changed",
+      "process.unfamiliar",
+      "file.change-burst",
+      "backup.warning"
+    ],
+    "rules": [
+      "file-activity-review"
+    ]
+  },
+  "id": "endpoint.ransomware-behavior",
+  "schemaVersion": "tarosec.scenario/v1",
+  "version": "1.0.0"
+}

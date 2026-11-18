@@ -1,0 +1,21 @@
+{
+  "status": "turn.completed",
+  "usage": {
+    "input_tokens": 116296,
+    "cached_input_tokens": 95488,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 434,
+    "reasoning_output_tokens": 21
+  },
+  "answer": "Use Tarosec’s **fixture-generation specialist workflow** for a suspicious-login fixture. However, I can’t verify its exact name or invocation from this environment: the workspace has no `RTK.md` or Tarosec instructions, and access to the installed skills directory is restricted.\n\nWith only an entry point installed, treat it as a **router**: it can identify the appropriate workflow and explain prerequisites. Don’t assume it includes the specialist instructions, generator scripts, dependencies, or validation tools needed to generate a fixture.\n\nI haven’t installed anything or created files. To give you a verified workflow name and runnable command, I’d need the Tarosec entry point’s instructions pasted here.",
+  "actions": [
+    {
+      "command": "/bin/zsh -lc \"pwd; rg --files -g 'RTK.md' -g 'AGENTS.md' -g '*SKILL.md' -g '*tarosec*' -g '*README*'\"",
+      "exit_code": 1
+    },
+    {
+      "command": "/bin/zsh -lc 'ls -la; cat RTK.md'",
+      "exit_code": 1
+    }
+  ]
+}

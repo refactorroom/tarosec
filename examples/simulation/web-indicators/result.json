@@ -1,0 +1,51 @@
+{
+  "endedAt": "2026-01-01T00:00:10+00:00",
+  "engineVersion": "1.0.0",
+  "eventCount": 3,
+  "evidence": [
+    {
+      "id": "scenario",
+      "path": "scenario.json",
+      "sha256": "0d257532dd8b6797d11a2bb4a192b3e8ccb68b7b98f1843bddae0175d234ca0d"
+    },
+    {
+      "id": "events",
+      "path": "events.json",
+      "sha256": "b2cd9c787ba4e7f0548816edee97610c68e075bb437a5aca5b38f9740acd6161"
+    },
+    {
+      "id": "exercise",
+      "path": "exercise.json",
+      "sha256": "e11d287a29ab48e81285d9f36e59ca7b96d50fede4c735f3fc09ab0a5a3e2f32"
+    }
+  ],
+  "execution": "completed",
+  "expectedEvents": [
+    "web.suspicious-pattern",
+    "web.access-denied",
+    "web.unusual-request"
+  ],
+  "expectedRules": [
+    "web-pattern-review"
+  ],
+  "limitations": [
+    "Events and rule observations are fixture data. Results apply to this evaluation pipeline.",
+    "A digest binds the observation export to the event bytes. Source authenticity is unverified."
+  ],
+  "mode": "synthetic",
+  "observedEvents": [
+    "web.access-denied",
+    "web.suspicious-pattern",
+    "web.unusual-request"
+  ],
+  "outcome": "inconclusive",
+  "reasons": [
+    "web-pattern-review: alert evidence missing, conflicting or unattributed",
+    "No independent defensive rule observations were supplied."
+  ],
+  "runId": "847bcb66f47262e6baa2f8dddbb09b0db49489d67e61e93c74eeae8c6919ed19",
+  "scenario": "web.attack-patterns",
+  "scenarioVersion": "1.0.0",
+  "schemaVersion": "tarosec.simulation-result/v1",
+  "startedAt": "2026-01-01T00:00:00+00:00"
+}

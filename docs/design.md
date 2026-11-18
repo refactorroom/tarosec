@@ -1,6 +1,9 @@
 # Architecture
 
-Tarosec has four independently installable skills. Each has a short entry point,
+Tarosec has a dispatcher and five independently installable specialist skills.
+The dispatcher selects one available specialist without invoking a host-specific
+API. Simulation produces evidence and uses the same classifier as Purple.
+Each skill has a short entry point,
 task-specific references and a copy of the shared files. Agents read the skill
 and the relevant references on demand. There is no service to start.
 
