@@ -46,9 +46,17 @@ global copy.
 
 ## npm package
 
-Run `npm install tarosec@0.1.0` to download the published release. Its six
-skill directories and Python helpers are under `node_modules/tarosec/skills/`.
-Run `npx skills add refactorroom/tarosec` for agent discovery.
+Install the published package and sync its skills into your Codex project.
+
+```bash
+npm install tarosec@0.1.0
+npx skills@1.9.0 experimental_sync --copy --agent codex
+```
+
+The first command downloads the six skill directories and Python helpers into
+`node_modules/tarosec/skills/`. The second copies skills from your project's npm
+dependencies into `.agents/skills/` for Codex. Run the sync again after updating
+the package. For a direct GitHub install, use `npx skills add refactorroom/tarosec`.
 
 ## Other installation paths
 

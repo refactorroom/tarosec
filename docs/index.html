@@ -60,8 +60,23 @@
       <div class="wrap approach-grid"><div><p class="section-label">A practical approach</p><h2>Follow the evidence.<br>Keep the context.</h2></div><div class="approach-copy"><p>Tarosec helps your agent document what it saw, what it can conclude, and what still needs verification.</p><div class="principles"><div><strong>Start locally</strong><p>Review supplied source, records, and telemetry with read-only workflows.</p></div><div><strong>Keep results honest</strong><p>Separate observations from interpretation and mark missing evidence clearly.</p></div><div><strong>Validate the signal</strong><p>Compare synthetic scenarios with recorded detections and retain evidence references.</p></div></div></div></div>
     </section>
     <section id="install" class="section wrap install">
-      <div><p class="section-label">Get started</p><h2>Bring Tarosec<br>into your workflow.</h2><p>Install the complete suite with the Skills CLI, then ask your agent to use Tarosec on your project.</p><a class="text-link" href="https://github.com/refactorroom/tarosec/blob/main/docs/install.md">Read installation guide ↗</a></div>
-      <div class="install-panel"><div class="install-label"><span>Install all skills</span><button class="copy" type="button" data-copy="npx skills add refactorroom/tarosec">Copy</button></div><code>npx skills add refactorroom/tarosec</code><div class="install-divider"></div><div class="install-label"><span>In your coding agent</span></div><code>$tarosec ./project</code><p>Requires Node.js for installation. Python 3.10+ runs the included helpers.</p></div>
+      <div>
+        <h2>Install Tarosec</h2>
+        <p>Run these commands from your project directory. You need Node.js for installation and Python 3.10+ to run the included helpers.</p>
+        <p>Start a new session in your coding agent and enter <code>$tarosec ./project</code> to begin.</p>
+      </div>
+      <div class="install-panel">
+        <div class="install-label"><span>Add skills from GitHub</span><button class="copy" type="button" aria-label="Copy GitHub install command" data-copy="npx skills add refactorroom/tarosec">Copy</button></div>
+        <code>npx skills add refactorroom/tarosec</code>
+        <div class="install-divider"></div>
+        <div class="install-label"><span>Install the npm package</span><button class="copy" type="button" aria-label="Copy npm install command" data-copy="npm install tarosec@0.1.0">Copy</button></div>
+        <code>npm install tarosec@0.1.0</code>
+        <p>This downloads the six skill directories to <code>node_modules/tarosec/skills/</code>.</p>
+        <div class="install-divider"></div>
+        <div class="install-label"><span>Sync the npm copy into Codex</span><button class="copy" type="button" aria-label="Copy Codex sync command" data-copy="npx skills@1.9.0 experimental_sync --copy --agent codex">Copy</button></div>
+        <code>npx skills@1.9.0 experimental_sync --copy --agent codex</code>
+        <p>If you chose npm, run this next to copy the skills from your installed dependencies into this project's Codex skill directory. The command uses Skills CLI version 1.9.0.</p>
+      </div>
     </section>
   </main>
   <footer><div class="wrap footer-inner"><div><strong>Tarosec</strong><p>Assess. Defend. Validate. Improve.</p></div><div class="footer-links"><a href="https://github.com/refactorroom/tarosec">GitHub</a><a href="https://github.com/refactorroom/tarosec/blob/main/SECURITY.md">Security</a><a href="https://github.com/refactorroom/tarosec/blob/main/LICENSE">MIT License</a></div></div></footer>
