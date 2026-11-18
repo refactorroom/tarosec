@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
   <header class="header wrap">
@@ -20,34 +21,75 @@
     <p class="intro">Review a local project for security risks in source code, dependencies, CI/CD, and agent integrations.</p>
     <nav class="reference-nav" aria-label="Tarosec workflows"><a href="index.html#workflows">All workflows</a><a href="audit.html" aria-current="page">Audit</a><a href="red.html">Red</a><a href="blue.html">Blue</a><a href="purple.html">Purple</a><a href="simulate.html">Simulate</a></nav>
     <article class="reference-content">
+      <section id="quick-start">
+        <h2>Quick start</h2>
+        <ol>
+          <li><a class="text-link" href="index.html#install">Install Tarosec</a> and open your project in your coding agent.</li>
+          <li>Paste the request below into the agent chat. Replace <code>./project</code> with your project path, or use <code>.</code> when your agent is already in the project root.</li>
+          <li>Review the findings and coverage gaps before asking the agent to make changes. Audit runs in read-only mode by default.</li>
+        </ol>
+        <div class="install-label"><strong>Review a project</strong><button class="copy" type="button" aria-label="Copy quick-start prompt" data-copy-target="audit-start">Copy</button></div>
+        <pre><code id="audit-start">$tarosec ./project
+Review this project for security risks. Start with a quick audit of authentication and configuration. Cite files and line numbers, and list anything you could not verify.</code></pre>
+      </section>
       <section>
         <h2>What to provide</h2>
-        <p>Provide a local checkout and the areas you want reviewed. For dependency triage, include a lockfile and any advisory or scanner report you already have.</p>
+        <p>Use a local checkout you are authorized to review. Tell the agent which files, components, or recent changes matter most. If you have a previous finding, advisory, or scanner report, give the agent its local path.</p>
       </section>
       <section>
-        <h2>Modes</h2>
+        <h2>Choose an audit mode</h2>
         <dl>
-          <div><dt><code>quick</code></dt><dd>Triage likely risks in exposed and privileged paths.</dd></div>
-          <div><dt><code>deep</code></dt><dd>Trace trust boundaries and explain coverage gaps.</dd></div>
-          <div><dt><code>dependencies</code></dt><dd>Compare reported issues with resolved versions.</dd></div>
-          <div><dt><code>agents</code></dt><dd>Review agent skills, hooks, prompts, and MCP integrations.</dd></div>
-          <div><dt><code>verify</code></dt><dd>Recheck existing findings against current source.</dd></div>
+          <div><dt><a class="text-link" href="#quick">Quick</a></dt><dd>Get a first pass on the highest-risk areas.</dd></div>
+          <div><dt><a class="text-link" href="#deep">Deep</a></dt><dd>Follow a sensitive operation through the code.</dd></div>
+          <div><dt><a class="text-link" href="#dependencies">Dependencies</a></dt><dd>Check whether a reported issue affects the versions in your lockfile.</dd></div>
+          <div><dt><a class="text-link" href="#agents">Agents</a></dt><dd>Review skills, hooks, prompts, and MCP tool permissions.</dd></div>
+          <div><dt><a class="text-link" href="#verify">Verify</a></dt><dd>Check whether a change addresses a specific finding.</dd></div>
         </dl>
       </section>
-      <section>
-        <h2>Workflow</h2>
-        <ol>
-          <li>Identify the assets and trust boundaries in scope.</li>
-          <li>Trace suspected issues to code and distinguish verified findings from potential risks.</li>
-          <li>Prioritize findings and cite the supporting file and line, impact, and remediation.</li>
-        </ol>
+      <section id="quick">
+        <h2>Quick audit</h2>
+        <p>Use the default <code>quick</code> mode when you want to know where to start. It looks first at exposed entry points, privileged actions, possible secret exposure, and risky configuration. Ask the agent to name the areas it leaves for a later review.</p>
+        <div class="install-label"><strong>Example prompt</strong><button class="copy" type="button" aria-label="Copy quick audit prompt" data-copy-target="audit-quick">Copy</button></div>
+        <pre><code id="audit-quick">$tarosec-audit
+Run a quick audit of ./project. Focus on public routes, admin permissions, and deployment configuration. Give me the highest-priority findings with file and line references, and list areas you deferred.</code></pre>
+      </section>
+      <section id="deep">
+        <h2>Deep audit</h2>
+        <p>Use <code>deep</code> when you need evidence about a particular feature or boundary. Give the agent a narrow scope, such as who may read customer exports. It follows the operation from the entry point to the protected data and checks what actually enforces access.</p>
+        <div class="install-label"><strong>Example prompt</strong><button class="copy" type="button" aria-label="Copy deep audit prompt" data-copy-target="audit-deep">Copy</button></div>
+        <pre><code id="audit-deep">$tarosec-audit
+Run a deep audit of the customer export feature in ./project. Trace each entry point to its authorization checks and the data it reads. Check whether the tests assert who can access an export. Cite the code and list any boundaries you could not verify.</code></pre>
+      </section>
+      <section id="dependencies">
+        <h2>Dependency audit</h2>
+        <p>Use <code>dependencies</code> to review an existing advisory or scanner report. Provide the lockfile so the agent can check the exact resolved version and trace how the package enters your project. The report should distinguish an affected version from evidence that the application uses the affected code.</p>
+        <div class="install-label"><strong>Example prompt</strong><button class="copy" type="button" aria-label="Copy dependency audit prompt" data-copy-target="audit-dependencies">Copy</button></div>
+        <pre><code id="audit-dependencies">$tarosec-audit
+Use dependencies mode on ./project. Compare ./project/package-lock.json with my saved dependency report at ./dependency-report.json. For each match, show the resolved version and dependency path. Flag stale or unverified entries. Keep the review offline.</code></pre>
+      </section>
+      <section id="agents">
+        <h2>Agent and MCP audit</h2>
+        <p>Use <code>agents</code> for a local skill, hook, agent configuration, or MCP server definition. Ask the reviewer to trace what data reaches a tool, what action the tool can take, and which permission checks protect that action. The reviewer inspects the supplied files as data.</p>
+        <div class="install-label"><strong>Example prompt</strong><button class="copy" type="button" aria-label="Copy agent audit prompt" data-copy-target="audit-agents">Copy</button></div>
+        <pre><code id="audit-agents">$tarosec-audit
+Use agents mode to review the skill and MCP configuration files I supplied from ./project. Trace which inputs can reach tools that read or share data. Cite the permission checks you can verify and flag unverified controls. Review the files without activating the skill or running hooks.</code></pre>
+      </section>
+      <section id="verify">
+        <h2>Verify a fix</h2>
+        <p>Use <code>verify</code> after a fix. Supply the original finding and its ID, the updated source, and any saved regression results. Ask the agent to revisit the same code path so you can compare the result with the original finding.</p>
+        <div class="install-label"><strong>Example prompt</strong><button class="copy" type="button" aria-label="Copy fix verification prompt" data-copy-target="audit-verify">Copy</button></div>
+        <pre><code id="audit-verify">$tarosec-audit
+Use verify mode for finding AUDIT-001 in ./findings.md. Review the current code in ./project and my saved regression results. Keep the original finding ID. Explain whether the fix addresses the original issue, with evidence and any remaining uncertainty.</code></pre>
       </section>
       <section>
-        <h2>Example agent request</h2>
-        <pre><code>$tarosec audit ./project
-Review configuration and authentication. Cite file and line evidence and report coverage gaps.</code></pre>
-        <h2>What to expect</h2>
-        <p>A prioritized report with evidence, remediation guidance, and unverified areas. Secrets should be redacted from the report.</p>
+        <h2>Read the results</h2>
+        <ul>
+          <li><strong>Evidence</strong> shows where the issue appears and which conditions must be present for it to matter.</li>
+          <li><strong>Severity and confidence</strong> tell you how serious the impact could be and how well the evidence supports the conclusion.</li>
+          <li><strong>Remediation and regression checks</strong> describe the proposed fix and how to verify it.</li>
+          <li><strong>Coverage</strong> shows what the agent inspected, what it could not verify, and which checks it actually ran. Secret values are redacted.</li>
+        </ul>
+        <p>Replace the sample paths and finding ID with your own. If evidence is missing, ask the agent to name the specific file, report, or test result it needs.</p>
       </section>
     </article>
   </main>
