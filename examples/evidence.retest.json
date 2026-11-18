@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "tarosec.evidence/v1",
+  "id": "EV-EXPORT-RETEST",
+  "source": "synthetic alert export",
+  "collectionMethod": "embedded fixture results for RULE-MARKER",
+  "collectedAt": "2026-11-18T09:05:00+07:00",
+  "originalTimezone": "+07:00",
+  "artifactPath": "examples/exercise.retest.json",
+  "sha256": "8baa9a6c671cb84a5279afec705a0ddbf21bc77f1030e5c949fa2b685825bf2a",
+  "sensitivity": "public",
+  "redacted": false,
+  "integrity": "hash-recorded",
+  "relatedExercises": [
+    "EX-MARKER-RETEST"
+  ]
+}

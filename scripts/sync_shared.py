@@ -7,6 +7,7 @@ repo-root files. Canonical sources live at the repo root; each skill gets copies
   references/*.md          -> skills/<skill>/references/shared/
   schemas/*.schema.json    -> skills/<skill>/assets/schemas/
   scripts/validate_record.py -> skills/<skill>/scripts/
+  LICENSE, SOURCE_NOTICES.md  -> skills/<skill>/
 
 Usage: sync_shared.py [--check]   (--check: exit 1 on drift, write nothing)
 """
@@ -29,6 +30,8 @@ def plan() -> list[tuple[Path, Path]]:
             pairs.append((src, skill / "assets" / "schemas" / src.name))
         src = ROOT / "scripts" / "validate_record.py"
         pairs.append((src, skill / "scripts" / src.name))
+        for name in ("LICENSE", "SOURCE_NOTICES.md"):
+            pairs.append((ROOT / name, skill / name))
     return pairs
 
 

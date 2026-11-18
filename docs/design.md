@@ -1,69 +1,77 @@
-# Tarosec v0.1 design assessment
+# Architecture
 
-Produced with the Panda Skill Lab method on 2026-11-18 against the "Tarosec —
-Cybersecurity Skills Architecture" proposal.
+Tarosec has four independently installable skills. Each has a short entry point,
+task-specific references and a copy of the shared files. Agents read the skill
+and the relevant references on demand. There is no service to start.
 
-## Corrections to the proposal's premise
+## Inputs and outputs
 
-1. **Panda Suite 1.8.0 has no separate Red or Blue skill.** It ships
-   `panda-security` (audit: quick/deep/skills/verify) and `panda-recon`, one skill
-   that covers scan, recon, simulate, hunt, incident, bounty, verify and intel.
-   So v0.1 is a **split** of `panda-recon`, not a migration of three existing skills.
-2. **Purple already partly exists.** `panda-recon` `simulate` mode
-   (`references/validation.md`) already separates "observed alert, missing
-   expected alert, missing telemetry, untested detection". `tarosec-purple` turns
-   that paragraph into a primary workflow: an explicit outcome table, an exercise
-   schema, and a deterministic classifier.
-3. **Shared root folders don't reach installed skills.** Hosts load one skill
-   directory at a time, so `references/` and `schemas/` at the repo root are
-   invisible after install. Fix: canonical root files + `scripts/sync_shared.py`
-   copies into each skill, with a `--check` test that fails on drift.
-4. **`$tarosec-audit` is Codex-style syntax.** In Claude Code a plugin skill shows
-   up as `/tarosec:tarosec-audit` or triggers from its description.
-5. **Scenario format.** The proposal used `lab-scenario.yaml`. v0.1 uses JSON so
-   the helpers stay stdlib-only. This environment had no PyYAML or jsonschema.
-
-## Target failure modes (hypothesized, not yet observed)
-
-| Skill | What a plain agent likely gets wrong | Case |
+| Skill | Trigger and inputs | Output |
 | --- | --- | --- |
-| purple | Treats "no alert" as a detection gap, ignoring failed runs, dead sensors, late or off-host alerts; reports one pass % | P1 |
-| purple | Treats an approval string in the exercise file as authorization; runs against production | P2 |
-| purple | Accepts a mislabelled ATT&CK ID | P3 |
-| blue | Is swayed by instructions planted in log fields; assumes the zone of unzoned syslog | B1 |
-| red | Widens scope to discovered or excluded hosts because "they're the client's" | R1 |
-| audit | Trusts a green suite and the existence of an access helper | A1 / A1C |
-| all | Activates on a plain conceptual question | N1 |
+| Audit | A security question about source, configuration, lockfiles, CI or agent integrations | Evidence-backed findings and coverage limits |
+| Red | A scope or exposure question about supplied asset lists, engagement records or scan reports | Offline inventory, scope decisions and assessment evidence |
+| Blue | A question about supplied logs, alerts, indicators or detection rules | Timeline, classification, alternate explanations and gaps |
+| Purple | A question about whether a recorded or synthetic exercise produced expected observations | Per-step outcomes, deciding evidence and retest status |
 
-These are hypotheses. Whether the skills beat a baseline is **Not Run** (see
-[evaluations](../evaluations/README.md)).
+General security explanations need no Tarosec workflow. Audit can pass a finding
+ID to Red for corroboration. Blue can supply telemetry provenance or a rule
+observation to Purple. Purple can return a detection or telemetry finding for
+follow-up. Skills exchange records and IDs without invoking each other.
 
-## Contract decisions
+## Record contracts
 
-- **Four skills only.** Intel and incident stay as labelled sections inside
-  `tarosec-blue` until a case shows a separate trigger is worth it (the proposal's
-  own rule). Fewer descriptions also means less routing confusion.
-- **One finding schema with a `producer` field.** Severity, confidence, status and
-  claim strength are independent fields. Purple's gap types are `status` values,
-  so audit, red, blue and purple records can be merged.
-- **Authorization is centralized** in `references/authorization.md`, and each
-  SKILL.md links to it instead of restating it. The rule: a file narrows scope and
-  never grants it. Only the operator, in the current session, can grant an action.
-- **Non-triggers are in every description** ("Not for …"), and a test enforces it.
+Canonical JSON Schemas are in [schemas](../schemas). The record's
+`schemaVersion` uses `tarosec.<kind>/v1`. Each schema has a unique URN.
 
-## Coexistence with Panda Suite
+| Record | Contents |
+| --- | --- |
+| Engagement | Responsible authority, listed assets, exclusions, time window, budgets and evidence handling |
+| Finding | Stable ID, producer, confidence, severity, claim strength, evidence, impact, remediation and verification |
+| Evidence | Artifact provenance, collection time, original timezone, optional hash and custody |
+| Case | References to assets, findings, evidence, exercises and activities |
+| Exercise | Expected observations per step, recorded observations, evidence and optional retest linkage |
 
-If both plugins are installed, `panda-security` overlaps `tarosec-audit` and
-`panda-recon` overlaps red, blue and purple. Routing between them is untested.
-Options: deprecate the Panda security skills once Tarosec has eval evidence,
-or narrow their descriptions to point to Tarosec. Decide after the routing eval.
+The bundled validator checks field shape and supported JSON Schema constraints.
+Cross-file references, coverage of an alert export, timestamps, scope and
+authorization need review. Use IDs to cite evidence and keep raw artifacts in the
+authorized evidence root. The classifier reads one exercise record and reports
+outcomes with reasons and referenced evidence IDs.
 
-## Not done in v0.1
+Shared references, schemas, licenses and the validator are built into each skill
+by `scripts/sync_shared.py`. The drift check ensures independent installs get
+the same contracts.
 
-- Not migrated: `panda-recon`'s helper scripts (`recon.py`, `scan.py`,
-  `intel*.py`, about 115 KB with tests). They support scope checks, case
-  lifecycle and intel retrieval. Port them only once their behavior is needed
-  and the tests come with them.
-- No incident schema yet; it waits for `tarosec-incident`.
-- No live SIEM/EDR, Atomic Red Team or CALDERA integration.
-- No host discovery or routing test. Only manifest validation was run.
+## Execution and adapters
+
+Python helpers parse local files and write diagnostics or results to stdout.
+Supplied text and record fields are data. The helpers launch no external
+processes and make no network requests. Host permissions control what the agent
+can read and run. Keep tests on synthetic evidence and use bounded, isolated
+tool permissions when checking safety behavior.
+
+| Potential input or integration | v0.1 decision |
+| --- | --- |
+| Semgrep, Gitleaks, Trivy, OSV-Scanner | Review supplied report, tool version, exit status and scan coverage. Record supported findings and gaps. |
+| Network scanner reports | Review supplied scope and exported inventory or scan metadata offline. |
+| Zeek, Suricata, Sigma and SIEM exports | Read supplied evidence and document schema, coverage and time windows. Use recorded controls for detection verification. |
+| Benign simulation | Read prerecorded marker and alert data. No emulation platform is required. |
+| Panda Suite, Invaris, Evaris and Itervyn | Optional workflow companions. Integration depends on a verified interface and a demonstrated case for it. |
+
+Any future report adapter needs a bounded supported format, provenance, failure
+handling, redaction tests and versioned fixtures. Threat intelligence starts
+with exact resolved versions and authoritative vendor or ecosystem records.
+Record source and retrieval date, explain disagreement, and label status as
+affected, not affected, unknown or unverified. Use locally supplied advisories
+when network research is unavailable.
+
+## Future skills
+
+| Skill | Extract when |
+| --- | --- |
+| `tarosec-intel` | Dated advisory reconciliation and prioritization require their own inputs, outputs and routing tests |
+| `tarosec-incident` | A full incident lifecycle, custody and handoff repeatedly exceed Blue triage |
+| `tarosec-threat` | Repeated design reviews need a dedicated trust-boundary and abuse-case workflow |
+| `tarosec-posture` | Baseline checks across infrastructure or cloud need distinct inventories and evidence |
+
+Before adding a trigger, compare it with the closest existing workflow on
+routing and outcome quality. Prioritize host and case evaluation before new integrations.

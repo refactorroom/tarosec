@@ -1,0 +1,9 @@
+{
+  "date": "2026-10-04",
+  "revision": "fixture-old",
+  "package": "example-parser",
+  "resolvedVersion": "2.1.0",
+  "scannerStatus": "binary_missing",
+  "exitCode": 127,
+  "findings": []
+}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "tarosec.evidence/v1",
+  "id": "EV-EXPORT-BASELINE",
+  "source": "synthetic alert export",
+  "collectionMethod": "embedded fixture results for RULE-MARKER",
+  "collectedAt": "2026-11-18T09:05:00+07:00",
+  "originalTimezone": "+07:00",
+  "artifactPath": "examples/exercise.example.json",
+  "sha256": "69f4c8ee8a75f4b1f6db75fcd97c666b56b2dfcc5284e20e6ad9678585a03f25",
+  "sensitivity": "public",
+  "redacted": false,
+  "integrity": "hash-recorded",
+  "relatedExercises": [
+    "EX-MARKER-BASELINE"
+  ]
+}

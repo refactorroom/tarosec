@@ -10,6 +10,10 @@
     "schemaVersion": {"const": "tarosec.exercise/v1"},
     "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"},
     "name": {"type": "string", "minLength": 1},
+    "objective": {"type": "string", "minLength": 1},
+    "retestOf": {"type": "string", "minLength": 1},
+    "changeSummary": {"type": "string", "minLength": 1},
+    "limitations": {"type": "array", "items": {"type": "string", "minLength": 1}},
     "engagementRef": {"type": "string"},
     "environment": {"enum": ["offline", "laboratory", "staging", "production"]},
     "attackVersion": {"type": "string", "minLength": 1},
@@ -61,7 +65,7 @@
             "properties": {
               "telemetrySources": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
               "detections": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
-              "maxLatencySeconds": {"type": "integer"}
+              "maxLatencySeconds": {"type": "integer", "minimum": 0}
             }
           },
           "results": {
@@ -75,10 +79,15 @@
                 "required": ["status"],
                 "properties": {
                   "status": {"enum": ["executed", "failed", "blocked", "not_run", "unknown"]},
+                  "startedAt": {"type": "string"},
                   "endedAt": {"type": "string"},
                   "prevented": {"type": "boolean"},
                   "evidenceRefs": {"type": "array", "items": {"type": "string"}}
                 }
+              },
+              "reportedOutcome": {
+                "description": "Optional analyst annotation. The classifier derives its outcome from the observations.",
+                "enum": ["Detected", "Detected (late)", "Partially detected", "Prevented", "Detection gap", "Telemetry gap", "Inconclusive", "Not run"]
               },
               "telemetry": {
                 "type": "array",

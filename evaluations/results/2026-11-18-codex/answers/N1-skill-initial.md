@@ -1,0 +1,1 @@
+Antivirus mainly detects and blocks malicious files or programs using signatures and behavioral analysis. Endpoint Detection and Response (EDR) continuously monitors endpoint activity to help security teams investigate threats and respond, such as by isolating a compromised device.

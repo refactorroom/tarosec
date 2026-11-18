@@ -1,7 +1,7 @@
 {
   "name": "tarosec",
   "version": "0.1.0",
-  "description": "Agent-native cybersecurity skills for Red, Blue and Purple teams: audit, authorized offensive testing, defensive investigation and detection validation.",
+  "description": "Offline cybersecurity skills for source audit, assessment scope review, defensive investigation and detection validation.",
   "author": {"name": "akkaraponph"},
   "license": "MIT",
   "keywords": ["security", "red-team", "blue-team", "purple-team", "detection", "audit", "skills"]

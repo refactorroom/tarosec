@@ -19,6 +19,20 @@
     "redacted": {"type": "boolean"},
     "integrity": {"enum": ["verified-against-reference", "hash-recorded", "mismatch", "no-artifact", "unknown"]},
     "limitations": {"type": "string"},
-    "relatedFindings": {"type": "array", "items": {"type": "string"}}
+    "relatedFindings": {"type": "array", "items": {"type": "string"}},
+    "relatedExercises": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "custody": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["at", "actor", "action"],
+        "properties": {
+          "at": {"type": "string", "minLength": 1},
+          "actor": {"type": "string", "minLength": 1},
+          "action": {"type": "string", "minLength": 1}
+        }
+      }
+    }
   }
 }

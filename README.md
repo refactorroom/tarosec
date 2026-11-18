@@ -1,80 +1,88 @@
 # Tarosec
 
-**Assess · Defend · Validate · Improve**
+**Assess. Defend. Validate. Improve.**
 
-Agent-native cybersecurity skills for Red, Blue and Purple teams. Each skill is a
-self-contained [Agent Skill](https://agentskills.io/specification); the suite
-shares one authorization model, evidence rules and JSON record schemas.
+Tarosec is an offline cybersecurity skill suite for developers, security
+reviewers, and detection engineers using AI coding agents. It helps agents turn
+source code, assessment records, and telemetry into evidence-backed findings.
 
-| Skill | Role | Modes (request cues, not CLI subcommands) |
+| Skill | Use it for | Modes |
 | --- | --- | --- |
-| [`tarosec-audit`](skills/tarosec-audit/SKILL.md) | Code, dependency, CI/CD, MCP and Agent Skill auditing | `quick` `deep` `dependencies` `agents` `verify` |
-| [`tarosec-red`](skills/tarosec-red/SKILL.md) | Authorized recon, scoped validation, bounty evidence | `recon` `scan` `simulate` `bounty` `validate` |
-| [`tarosec-blue`](skills/tarosec-blue/SKILL.md) | Hunting, triage, log analysis, detection engineering | `hunt` `triage` `logs` `detect` `monitor` |
-| [`tarosec-purple`](skills/tarosec-purple/SKILL.md) | Detection validation: expected vs observed per emulation step | `exercise` `emulate` `validate` `coverage` `retest` |
+| [Tarosec Audit](skills/tarosec-audit/SKILL.md) | Audit source, dependencies, CI/CD, MCP and Agent Skills | `quick`, `deep`, `dependencies`, `agents`, `verify` |
+| [Tarosec Red](skills/tarosec-red/SKILL.md) | Review scope, inventory exposed assets, and triage supplied assessment results | `recon`, `scan`, `simulate`, `bounty`, `validate` |
+| [Tarosec Blue](skills/tarosec-blue/SKILL.md) | Investigate supplied telemetry and design or verify detection logic | `hunt`, `triage`, `logs`, `detect`, `verify`, `monitor` |
+| [Tarosec Purple](skills/tarosec-purple/SKILL.md) | Compare recorded exercise steps with expected telemetry and alerts | `plan`, `exercise`, `emulate`, `validate`, `coverage`, `retest` |
 
-`tarosec-purple` is the core: it classifies each step as **Detected, Detected
-(late), Prevented, Detection gap, Telemetry gap, Inconclusive** or **Not run**,
-so a missing alert is never automatically reported as a gap.
-`skills/tarosec-purple/scripts/classify_exercise.py` applies that table offline.
+Use the modes as cues in an agent request. The deterministic Python helpers
+require Python 3.10 or later.
 
-Planned, not shipped: `tarosec-intel`, `tarosec-incident` (v0.2),
-`tarosec-threat`, `tarosec-posture` (v0.3). See [design](docs/design.md).
+## Install from a local checkout
 
-## Safety model
-
-Read-only analysis is the default. Target contact, emulation, credential use,
-containment and production changes need explicit approval from the operator for
-that action. An engagement or exercise file narrows scope; it never grants it.
-See [authorization](references/authorization.md). The skills are instructions,
-not a sandbox: enforce boundaries with host permissions as well.
-
-## Use
-
-Claude Code (local checkout, session-only):
+Run from the project where you want to use Tarosec. Replace the source path with
+the absolute path to this checkout.
 
 ```bash
-claude --plugin-dir /path/to/tarosec
+npx skills@1.9.0 add /path/to/tarosec --list
+npx skills@1.9.0 add /path/to/tarosec --skill '*' --agent codex claude-code --copy -y
+npx skills@1.9.0 list --agent codex claude-code
 ```
 
-Example prompts: `Use tarosec-purple to validate examples/exercise.example.json`,
-`tarosec-audit deep ./project`, `tarosec-blue hunt ./logs`.
+Select a single skill with `--skill tarosec-purple`, or choose one agent with
+`--agent codex` or `--agent claude-code`. These project-level commands were
+checked locally with Vercel Skills 1.9.0. For a session-only Claude Code plugin,
+use `claude --plugin-dir /path/to/tarosec`. See [installation and troubleshooting](docs/install.md).
 
-Other Agent Skills hosts: copy a directory from `skills/` into the host's skill
-folder. Each skill directory is complete on its own.
+## Try it offline
 
-## Layout
+Open this checkout with the desired skill installed, then give the agent one
+of these requests. Fixture inputs are under [evaluations](evaluations/fixtures).
 
-```
-skills/<skill>/        SKILL.md, references/, scripts/, assets/schemas/ (shared copies)
-references/            canonical shared guidance (authorization, evidence, standards)
-schemas/               canonical JSON schemas: engagement, evidence, finding, exercise
-scripts/               validate_record.py, sync_shared.py, prepare_eval.py
-evaluations/           blind fixtures + reviewer-only answer key
-examples/              schema-valid sample records
-tests/                 structural, helper and fixture tests
-```
+- **Audit** — Review `evaluations/fixtures/A1-audit-green-idor/app/invoices.py`
+  and the tests beside it. Check invoice read and refund authorization against
+  the policy in the fixture's `TASK.md`. Cite the effective guard and coverage gaps.
+- **Red** — Review `evaluations/fixtures/R1-red-scope/engagement.json` and
+  `recon-notes.md`. List supplied assets and separate in-scope, excluded and
+  unverified entries. Keep the assessment offline.
+- **Blue** — Triage `evaluations/fixtures/B2-blue-false-positive/events.jsonl`.
+  Correlate the alert with the change approval and job run. State which evidence
+  would change your conclusion.
+- **Purple** — Compare `examples/exercise.example.json` and
+  `examples/exercise.retest.json`. Report the outcome for S1 and cite the evidence IDs.
 
-Edit shared files only at the root, then run `python3 scripts/sync_shared.py`.
-
-## Development checks
+The standalone Purple helper applies the same outcome table:
 
 ```bash
-python3 -B -m unittest discover -s tests
+python3 -B skills/tarosec-purple/scripts/classify_exercise.py examples/exercise.example.json --json
+python3 -B skills/tarosec-purple/scripts/classify_exercise.py examples/exercise.retest.json --json
 ```
+
+The supplied event initially has a **Detection gap**. The retest records
+**Detected** with a 12-second delay. Both runs use synthetic records. See the
+[worked example](examples/README.md) for the evidence chain and inconclusive case.
+
+## Boundaries and limitations
+
+Tarosec v0.1 works from supplied artifacts and benign synthetic data. It
+supports offline asset inventory, scan-report review, defensive investigations,
+and detection exercises. Active scans, exploitation, live emulation, and
+production execution are outside the release scope.
+
+An engagement record documents scope. Authority comes from the operator.
+Skill guidance depends on the host for tool, filesystem and network restrictions.
+Use the [authorization rules](references/authorization.md) and
+[evidence-handling guidance](references/evidence-handling.md) when reviewing private data.
+
+## Development
 
 ```bash
 python3 -B scripts/sync_shared.py --check
+python3 -B -m unittest discover -s tests -v
 ```
 
-```bash
-claude plugin validate .
-```
+Each directory under `skills/` bundles its instructions, references, schemas,
+validator and license notices. Edit shared files at the repository root and run
+`python3 -B scripts/sync_shared.py`. See the [architecture and roadmap](docs/design.md),
+[migration assessment](docs/migration.md), [evaluation instructions](evaluations/README.md),
+[release readiness](docs/release-readiness.md), and [contribution guide](CONTRIBUTING.md).
 
-These check structure, helpers and fixtures. They do not measure model behavior;
-see [evaluations](evaluations/README.md).
-
-## License
-
-MIT. Derived in part from guidance in Panda Suite `panda-security` and
-`panda-recon` (same author, MIT).
+[MIT license](LICENSE) · [Source notices](SOURCE_NOTICES.md) · [Security policy](SECURITY.md)

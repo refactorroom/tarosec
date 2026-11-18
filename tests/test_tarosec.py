@@ -1,4 +1,5 @@
 """Structural, helper and fixture checks. These validate artifacts, not model behavior."""
+import hashlib
 import json
 import re
 import subprocess
@@ -73,7 +74,7 @@ class SkillFormat(unittest.TestCase):
 
 class Schemas(unittest.TestCase):
     def test_examples_valid(self):
-        for kind in ("engagement", "exercise", "finding"):
+        for kind in ("case", "engagement", "evidence", "exercise", "finding"):
             errs = validate(load(ROOT / f"examples/{kind}.example.json"), load(ROOT / f"schemas/{kind}.schema.json"))
             self.assertEqual(errs, [], kind)
 
@@ -87,6 +88,32 @@ class Schemas(unittest.TestCase):
 
     def test_validator_refuses_unsupported_keyword(self):
         self.assertTrue(validate(1, {"maximum": 0}))
+
+    def test_case_rejects_duplicate_references(self):
+        case = load(ROOT / "examples/case.example.json")
+        case["evidenceRefs"].append(case["evidenceRefs"][0])
+        self.assertTrue(validate(case, load(ROOT / "schemas/case.schema.json")))
+
+    def test_negative_engagement_budget_rejected(self):
+        engagement = load(ROOT / "examples/engagement.example.json")
+        engagement["budgets"]["maxTotalRequests"] = -1
+        self.assertEqual(validate(engagement, load(ROOT / "schemas/engagement.schema.json")),
+                         ["$.budgets.maxTotalRequests: below minimum 0"])
+
+    def test_conflicting_json_rejected_and_enum_value_redacted(self):
+        schema = ROOT / "schemas/case.schema.json"
+        with tempfile.TemporaryDirectory() as work:
+            record = Path(work) / "case.json"
+            for payload, expected in [('{"status":"open","status":"closed"}', "duplicate"),
+                                      ('{"status":"SYNTHETIC_SECRET"}', "allowed choices"),
+                                      ('{"status":NaN}', "non-finite")]:
+                with self.subTest(payload=payload):
+                    record.write_text(payload)
+                    run = subprocess.run([sys.executable, "-B", str(ROOT / "scripts/validate_record.py"),
+                                          str(schema), str(record)], capture_output=True, text=True, timeout=5)
+                    self.assertNotEqual(run.returncode, 0)
+                    self.assertIn(expected, run.stdout + run.stderr)
+                    self.assertNotIn("SYNTHETIC_SECRET", run.stdout + run.stderr)
 
     def test_fixtures_schema_valid(self):
         schema = load(ROOT / "schemas/exercise.schema.json")
@@ -115,7 +142,7 @@ class Classifier(unittest.TestCase):
     def test_p1_answer_key(self):
         ex = load(FIX / "P1-purple-mixed/exercise.json")
         self.assertEqual([self.outcome(s) for s in ex["steps"]],
-                         ["Detected", "Detection gap", "Inconclusive", "Inconclusive", "Detected (late)"])
+                         ["Detected", "Inconclusive", "Inconclusive", "Inconclusive", "Detected (late)"])
 
     def test_not_run(self):
         self.assertEqual(self.outcome(step()), "Not run")
@@ -136,6 +163,56 @@ class Classifier(unittest.TestCase):
         self.assertEqual(self.outcome(step(execution=EXEC, telemetry=TEL_OK)), "Inconclusive")
         s = step(execution=EXEC, telemetry=TEL_OK, alerts=[{"ruleId": "R", "status": "unknown"}])
         self.assertEqual(self.outcome(s), "Inconclusive")
+
+    def test_conflicting_and_unattributed_alerts_are_inconclusive(self):
+        for alerts in ([{"ruleId": "R", "status": "fired"}],
+                       [{"ruleId": "R", "status": "fired", "host": "h1"},
+                        {"ruleId": "R", "status": "not_fired"}]):
+            with self.subTest(alerts=alerts):
+                self.assertEqual(self.outcome(step(execution=EXEC, telemetry=TEL_OK, alerts=alerts)),
+                                 "Inconclusive")
+
+    def test_missing_expected_rule_cannot_be_classified_as_a_gap(self):
+        s = step(execution=EXEC, telemetry=TEL_OK, alerts=[{"ruleId": "R", "status": "not_fired"}])
+        s["expected"]["detections"].append("S")
+        self.assertEqual(self.outcome(s), "Inconclusive")
+        s["results"]["alerts"].append({"ruleId": "S", "status": "not_fired"})
+        self.assertEqual(self.outcome(s), "Detection gap")
+
+    def test_multiple_expected_rules_report_partial_and_late(self):
+        s = step(execution=EXEC, telemetry=TEL_OK,
+                 alerts=[{"ruleId": "R", "status": "fired", "host": "h1", "firedAt": "2026-01-01T00:00:01Z"}])
+        s["expected"]["detections"].append("S")
+        self.assertEqual(self.outcome(s), "Partially detected")
+        s["results"]["alerts"].append({"ruleId": "S", "status": "fired", "host": "h1",
+                                      "firedAt": "2026-01-01T00:01:01Z"})
+        self.assertEqual(self.outcome(s), "Detected (late)")
+
+    def test_conflicting_telemetry_does_not_become_a_gap(self):
+        s = step(execution=EXEC, telemetry=[*TEL_OK, {"source": "s", "status": "absent", "sourceHealthy": True}],
+                 alerts=[{"ruleId": "R", "status": "not_fired"}])
+        self.assertEqual(self.outcome(s), "Inconclusive")
+
+    def test_alert_before_execution_is_inconclusive(self):
+        s = step(execution={**EXEC, "startedAt": EXEC["endedAt"]}, telemetry=TEL_OK,
+                 alerts=[{"ruleId": "R", "status": "fired", "host": "h1", "firedAt": "2025-12-31T23:00:00Z"}],
+                 reportedOutcome="Detected")
+        self.assertEqual(self.outcome(s), "Inconclusive")
+
+    def test_standalone_classifier_retest_preserves_evidence(self):
+        script = ROOT / "skills/tarosec-purple/scripts/classify_exercise.py"
+        for name, outcome in (("example", "Detection gap"), ("retest", "Detected")):
+            run = subprocess.run([sys.executable, "-B", str(script), str(ROOT / f"examples/exercise.{name}.json"),
+                                  "--json"], capture_output=True, text=True, timeout=5, check=True)
+            row, = json.loads(run.stdout)["steps"]
+            self.assertEqual((row["step"], row["outcome"]), ("S1", outcome))
+            self.assertEqual(row["evidenceRefs"][0], "EV-MARKER")
+        case = load(ROOT / "examples/case.example.json")
+        records = [load(path) for path in sorted((ROOT / "examples").glob("evidence.*.json"))]
+        self.assertCountEqual(case["evidenceRefs"], [record["id"] for record in records])
+        for record in records:
+            artifact = ROOT / record["artifactPath"]
+            self.assertEqual(hashlib.sha256(artifact.read_bytes()).hexdigest(), record["sha256"])
 
     def test_naive_timestamp_not_used_for_latency(self):
         s = step(execution={"status": "executed", "endedAt": "2026-01-01T00:00:00"}, telemetry=TEL_OK,
@@ -195,7 +272,13 @@ class PrepareEval(unittest.TestCase):
             names = {p.name for p in dest.rglob("*")}
             self.assertNotIn("cases.json", names)
             self.assertIn("PROMPT.md", names)
-            self.assertNotIn("Inconclusive", "".join(p.read_text() for p in dest.rglob("*.md")))
+            self.assertTrue((dest / ".agents/skills/tarosec-purple/SKILL.md").is_file())
+            self.assertEqual((dest / "PROMPT.md").read_text(), (dest / "TASK.md").read_text())
+            baseline = Path(d) / "baseline"
+            subprocess.run([sys.executable, "-B", str(ROOT / "scripts/prepare_eval.py"), "--case", "P1",
+                            "--arm", "baseline", "--dest", str(baseline)], capture_output=True, check=True)
+            self.assertEqual((baseline / "PROMPT.md").read_bytes(), (dest / "PROMPT.md").read_bytes())
+            self.assertFalse((baseline / ".agents").exists())
             r2 = subprocess.run([sys.executable, "-B", str(ROOT / "scripts/prepare_eval.py"),
                                  "--case", "P1", "--arm", "skill", "--dest", str(dest)], capture_output=True, text=True)
             self.assertEqual(r2.returncode, 2)

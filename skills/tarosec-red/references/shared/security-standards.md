@@ -10,10 +10,10 @@ rather than guess.
 
 | Framework | Use for | Source |
 | --- | --- | --- |
-| OWASP ASVS 5.0 | Application verification requirements (`tarosec-audit`) | https://asvs.owasp.org/ |
+| OWASP ASVS 5.0.0 | Application verification requirements (`tarosec-audit`) | https://asvs.owasp.org/ |
 | OWASP Top 10 (state edition) | Awareness taxonomy only, not a test plan | https://owasp.org/Top10/ |
 | CWE | Weakness type of a supported finding | https://cwe.mitre.org/ |
-| MITRE ATT&CK (state version, e.g. v17) | Adversary techniques: `T####` / `T####.###` | https://attack.mitre.org/ |
+| MITRE ATT&CK (state version) | Adversary techniques: `T####` / `T####.###` | https://attack.mitre.org/ |
 | MITRE D3FEND | Defensive countermeasures, e.g. `D3-PSA` | https://d3fend.mitre.org/ |
 | NIST SP 800-61 Rev. 3 | Incident response lifecycle (`tarosec-blue` triage) | https://csrc.nist.gov/pubs/sp/800/61/r3/final |
 | OWASP WSTG | Web test methodology (`tarosec-red`) | https://owasp.org/www-project-web-security-testing-guide/ |
@@ -28,3 +28,7 @@ rather than guess.
   skills do not attribute by default.
 - Technique IDs can be revoked or renumbered between versions; when a current
   lookup is not available, say the mapping is unverified against the current release.
+
+The stable references checked on 2026-11-18 were ASVS 5.0.0, ATT&CK v20.1 and
+NIST SP 800-61 Rev. 3. For older exercises, verify identifiers against the
+edition recorded in the exercise. Use the [ATT&CK version history](https://attack.mitre.org/resources/versions/).

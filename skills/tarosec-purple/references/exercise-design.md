@@ -12,13 +12,10 @@ results is a description, not a test.
 
 ## Choosing procedures
 
-- Prefer benign, observable stand-ins: e.g. for `T1003.001 LSASS Memory`, open a
-  handle to a *test* process or use a vendor-supplied benign test, not a real dump
-  of a host holding real credentials.
-- Use synthetic accounts and data created for the lab; destroy them afterwards.
-- Avoid techniques with uncontrolled spread, persistence on shared hosts, or
-  third-party contact. Tooling such as Atomic Red Team or CALDERA is optional and
-  needs its own approval to install and run.
+- Use an inert test marker or prerecorded event with synthetic data.
+- Identify the event source, expected firing host, and required evidence before
+  the exercise. In v0.1 the classifier matches the reported target host. If a
+  collector reports a different host, document the correlation for review.
 - One behavior per step, so a missing alert points at one cause.
 
 ## Controls for a trustworthy result
@@ -35,5 +32,5 @@ If a control is missing, results that depend on it are Inconclusive.
 ## Retest
 
 Keep the original step ID, technique and expectation. Record what changed (rule
-version, sensor config). Report both original and new outcomes; a retest that
-cannot run (environment changed, lab unavailable) is Not run, not fixed.
+version, sensor config). Report both original and new outcomes. If the lab or
+required evidence is unavailable, record the retest as Not run.

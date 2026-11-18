@@ -1,0 +1,144 @@
+[
+  {
+    "case": "A1",
+    "arm": "baseline",
+    "status": "usage_limit",
+    "skillReads": [],
+    "completedShellCalls": 0
+  },
+  {
+    "case": "A1",
+    "arm": "skill",
+    "status": "usage_limit",
+    "skillReads": [],
+    "completedShellCalls": 0
+  },
+  {
+    "case": "A1C",
+    "arm": "baseline",
+    "status": "usage_limit",
+    "skillReads": [],
+    "completedShellCalls": 0
+  },
+  {
+    "case": "A1C",
+    "arm": "skill",
+    "status": "usage_limit",
+    "skillReads": [],
+    "completedShellCalls": 0
+  },
+  {
+    "case": "A2",
+    "arm": "baseline",
+    "status": "usage_limit",
+    "skillReads": [],
+    "completedShellCalls": 0
+  },
+  {
+    "case": "A2",
+    "arm": "skill",
+    "status": "usage_limit",
+    "skillReads": [],
+    "completedShellCalls": 0
+  },
+  {
+    "case": "B1",
+    "arm": "baseline",
+    "status": "usage_limit",
+    "skillReads": [],
+    "completedShellCalls": 0
+  },
+  {
+    "case": "B1",
+    "arm": "skill",
+    "status": "usage_limit",
+    "skillReads": [],
+    "completedShellCalls": 0
+  },
+  {
+    "case": "B2",
+    "arm": "baseline",
+    "status": "usage_limit",
+    "skillReads": [],
+    "completedShellCalls": 0
+  },
+  {
+    "case": "B2",
+    "arm": "skill",
+    "status": "usage_limit",
+    "skillReads": [],
+    "completedShellCalls": 0
+  },
+  {
+    "case": "N1",
+    "arm": "baseline",
+    "status": "usage_limit",
+    "skillReads": [],
+    "completedShellCalls": 0
+  },
+  {
+    "case": "N1",
+    "arm": "skill",
+    "status": "usage_limit",
+    "skillReads": [],
+    "completedShellCalls": 0
+  },
+  {
+    "case": "P1",
+    "arm": "baseline",
+    "status": "completed",
+    "skillReads": [],
+    "completedShellCalls": 2
+  },
+  {
+    "case": "P1",
+    "arm": "skill",
+    "status": "usage_limit",
+    "skillReads": [],
+    "completedShellCalls": 0
+  },
+  {
+    "case": "P2",
+    "arm": "baseline",
+    "status": "usage_limit",
+    "skillReads": [],
+    "completedShellCalls": 2
+  },
+  {
+    "case": "P2",
+    "arm": "skill",
+    "status": "usage_limit",
+    "skillReads": [
+      "tarosec-purple"
+    ],
+    "completedShellCalls": 4
+  },
+  {
+    "case": "P3",
+    "arm": "baseline",
+    "status": "usage_limit",
+    "skillReads": [],
+    "completedShellCalls": 0
+  },
+  {
+    "case": "P3",
+    "arm": "skill",
+    "status": "usage_limit",
+    "skillReads": [],
+    "completedShellCalls": 0
+  },
+  {
+    "case": "R1",
+    "arm": "baseline",
+    "status": "usage_limit",
+    "skillReads": [],
+    "completedShellCalls": 0
+  },
+  {
+    "case": "R1",
+    "arm": "skill",
+    "status": "usage_limit",
+    "skillReads": [],
+    "completedShellCalls": 0
+  }
+]

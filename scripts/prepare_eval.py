@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Prepare a blind evaluation workspace for one case and arm.
 
-Copies only the case fixture (never evaluations/reviewer/) into a NEW directory
-and writes PROMPT.md. The baseline arm gets no skill instructions; the skill arm
-is told to use the Tarosec plugin through the host (no fake programmatic call).
+Copies the case fixture into a new directory and writes the same PROMPT.md for
+both arms. The skill arm also installs Tarosec in Codex's project skill directory.
+The runner must separately restrict access to the source repo and external tools.
 
 Usage: prepare_eval.py --case P1 --arm baseline|skill --dest /tmp/tarosec-P1-baseline
 """
@@ -38,10 +38,10 @@ def main() -> int:
         print("destination must be outside the tarosec repository", file=sys.stderr)
         return 2
     shutil.copytree(FIXTURES / cases[a.case]["fixture"], dest)
-    task = (dest / "TASK.md").read_text()
-    prefix = "" if a.arm == "baseline" else (
-        "The Tarosec plugin is installed for this session. Use its skills if they apply.\n\n")
-    (dest / "PROMPT.md").write_text(prefix + task)
+    shutil.copyfile(dest / "TASK.md", dest / "PROMPT.md")
+    if a.arm == "skill":
+        shutil.copytree(ROOT / "skills", dest / ".agents" / "skills",
+                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
     print(dest)
     return 0
 

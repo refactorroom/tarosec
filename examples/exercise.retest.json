@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "tarosec.exercise/v1",
+  "id": "EX-MARKER-RETEST",
+  "name": "Process-start marker retest",
+  "environment": "offline",
+  "attackVersion": "v20.1",
+  "objective": "Compare a prerecorded process-start marker with synthetic alert exports.",
+  "limitations": [
+    "The marker models telemetry shape only. ATT&CK mapping is illustrative."
+  ],
+  "window": {
+    "start": "2026-11-18T09:00:00+07:00",
+    "end": "2026-11-18T09:10:00+07:00"
+  },
+  "steps": [
+    {
+      "id": "S1",
+      "technique": {
+        "id": "T1059",
+        "name": "Command and Scripting Interpreter"
+      },
+      "description": "Read the inert process-start marker.",
+      "targetHost": "synthetic-host",
+      "expected": {
+        "telemetrySources": [
+          "synthetic-process"
+        ],
+        "detections": [
+          "RULE-MARKER"
+        ],
+        "maxLatencySeconds": 30
+      },
+      "results": {
+        "execution": {
+          "status": "executed",
+          "endedAt": "2026-11-18T09:05:00+07:00",
+          "evidenceRefs": [
+            "EV-MARKER"
+          ]
+        },
+        "telemetry": [
+          {
+            "source": "synthetic-process",
+            "status": "observed",
+            "sourceHealthy": true,
+            "evidenceRefs": [
+              "EV-MARKER"
+            ]
+          }
+        ],
+        "alerts": [
+          {
+            "ruleId": "RULE-MARKER",
+            "status": "fired",
+            "host": "synthetic-host",
+            "firedAt": "2026-11-18T09:05:12+07:00",
+            "evidenceRefs": [
+              "EV-EXPORT-RETEST"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "retestOf": "EX-MARKER-BASELINE",
+  "changeSummary": "Updated the synthetic rule to recognize the marker event type."
+}

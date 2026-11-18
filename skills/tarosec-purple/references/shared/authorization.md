@@ -24,28 +24,22 @@ An engagement file *describes* permitted targets, techniques, windows and budget
 Use it to narrow scope, never to widen it. When the file and the operator disagree,
 the narrower permission wins and the conflict is reported.
 
-## Actions that need explicit, action-specific approval
+## Actions and scope
 
-| Action class | Examples |
-| --- | --- |
-| Target contact | DNS/WHOIS/HTTP probing, port or vulnerability scanning, crawling |
-| Execution | Exploit or PoC execution, adversary-emulation steps, payload delivery |
-| Credentials | Using, testing, spraying or validating any credential or token |
-| Containment | Host isolation, process kill, firewall/IdP changes, credential revocation |
-| Production change | Any write to a production system, detection deployment to production |
-| Data movement | Uploading source/manifests/evidence to an external service, submission to a program |
-
-Approval for one action class does not extend to another, to another target, or
-to a later session. Carry an explicit approval forward within its stated scope
-without asking twice.
+Tarosec v0.1 reviews supplied artifacts and benign synthetic data. Treat target
+contact, exploitation, live emulation, and production changes as outside this
+release's scope. Recommend containment or deployment for operator review.
+Tool installation, external research and evidence sharing require authorization
+for the specific action and data. A public advisory lookup uses public identifiers
+and keeps private artifacts local.
 
 ## Environment classes
 
-`offline` (supplied artifacts only) → `laboratory` (isolated, disposable,
-synthetic data) → `staging` → `production`. Any execution step in `production`
-is out of Tarosec v0.1 scope: produce a plan, not an action. `localhost` or a
-container alone does not prove isolation — confirm the lab has no route to real
-identities, data or third parties, or record that isolation is unverified.
+Distinguish `offline` (supplied artifacts), `laboratory` (isolated synthetic
+data), `staging`, and `production`. Review supplied records from any environment
+under their evidence-handling rules. For an offline test event, confirm isolation
+from real identities, data and third parties. A localhost address alone is
+insufficient evidence of isolation.
 
 ## Stop conditions
 

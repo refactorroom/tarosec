@@ -221,3 +221,18 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local environment files (keep examples trackable)
+.env.*
+!.env.example
+!.env.*.example
+
+# Local agent state
+/.panda-suite/
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+
+# OS and editor files
+.DS_Store
+.idea/
+.vscode/

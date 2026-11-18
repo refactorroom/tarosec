@@ -32,7 +32,7 @@ assess. Read [authorization](references/shared/authorization.md),
    inspect the effective guard (binding, allowlist, ownership/tenant check,
    encoding). A dangerous API name or scanner hit alone is not a vulnerability.
    Passing tests are not proof of a guard: check what the tests actually assert.
-3. **Validate safely.** Static trace or local synthetic fixture. Never run
+3. **Validate safely.** Use a static trace or review a supplied regression result. Never run
    untrusted install scripts, hooks or audited skills to see if they're safe;
    never test a found credential against its provider.
 4. **Rank and reconcile.** One root cause = one finding. Severity (with rationale)
@@ -48,5 +48,5 @@ prerequisite and causal path, impact, evidence, controls considered, fix,
 regression check), checks actually run, coverage limits. Redact secrets by type
 and location. Optional JSON uses `assets/schemas/finding.schema.json` with
 `producer: tarosec-audit`. Read-only by default: source fixes, scanner installs,
-uploads, commits and pushes need explicit authorization. `tarosec-red` consumes
-these findings for runtime validation.
+uploads, commits and pushes need explicit authorization. `tarosec-red` can reuse
+the finding ID when checking supplied assessment evidence.

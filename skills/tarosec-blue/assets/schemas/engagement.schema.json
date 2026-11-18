@@ -67,11 +67,12 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "maxRequestsPerSecond": {"type": "number"},
-        "maxTotalRequests": {"type": "integer"},
-        "maxDurationMinutes": {"type": "integer"}
+        "maxRequestsPerSecond": {"type": "number", "minimum": 0},
+        "maxTotalRequests": {"type": "integer", "minimum": 0},
+        "maxDurationMinutes": {"type": "integer", "minimum": 0}
       }
     },
-    "stopConditions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+    "stopConditions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "evidenceHandling": {"type": "string", "minLength": 1}
   }
 }

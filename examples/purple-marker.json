@@ -1,0 +1,7 @@
+{
+  "eventId": "event-01",
+  "host": "synthetic-host",
+  "timestamp": "2026-11-18T09:05:00+07:00",
+  "eventType": "exercise-marker",
+  "label": "synthetic process start"
+}

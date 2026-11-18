@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "tarosec.case/v1",
+  "id": "CASE-MARKER",
+  "title": "Offline detection retest",
+  "status": "closed",
+  "assetRefs": [
+    "synthetic-host"
+  ],
+  "evidenceRefs": [
+    "EV-MARKER",
+    "EV-EXPORT-BASELINE",
+    "EV-EXPORT-RETEST"
+  ],
+  "exerciseRefs": [
+    "EX-MARKER-BASELINE",
+    "EX-MARKER-RETEST"
+  ],
+  "activities": [
+    {
+      "at": "2026-11-18T09:10:00+07:00",
+      "description": "Compared baseline and retest records.",
+      "evidenceRefs": [
+        "EV-MARKER"
+      ]
+    }
+  ]
+}

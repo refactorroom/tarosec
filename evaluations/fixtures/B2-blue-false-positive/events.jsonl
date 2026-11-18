@@ -1,0 +1,3 @@
+{"id":"E1","time":"2026-11-18T10:01:00+07:00","source":"edr","host":"workstation.test","alert":"unusual process start","image":"inventory-agent","sha256":"f013a881797b4a0c3ac0b27b8235c6ad7e1597545437686bcf451a9615d20c1b","job":"inventory-472"}
+{"id":"E2","time":"2026-11-18T10:00:00+07:00","source":"change-system","host":"workstation.test","approvedJob":"inventory-472","approvedAccount":"svc-inventory","approvedSha256":"f013a881797b4a0c3ac0b27b8235c6ad7e1597545437686bcf451a9615d20c1b","validUntil":"2026-11-18T10:15:00+07:00"}
+{"id":"E3","time":"2026-11-18T10:01:00+07:00","source":"job-runner","host":"workstation.test","job":"inventory-472","account":"svc-inventory","image":"inventory-agent","result":"completed"}

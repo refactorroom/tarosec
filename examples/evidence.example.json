@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "tarosec.evidence/v1",
+  "id": "EV-MARKER",
+  "source": "synthetic fixture",
+  "collectionMethod": "prerecorded marker",
+  "collectedAt": "2026-11-18T09:05:00+07:00",
+  "originalTimezone": "+07:00",
+  "artifactPath": "examples/purple-marker.json",
+  "sha256": "2aae0f5f7d4ccc7cc979b39381c149c41635bfc677a0202a49ef988b1160d3a9",
+  "sensitivity": "public",
+  "redacted": false,
+  "integrity": "hash-recorded",
+  "relatedExercises": [
+    "EX-MARKER-BASELINE",
+    "EX-MARKER-RETEST"
+  ]
+}

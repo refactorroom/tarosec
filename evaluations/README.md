@@ -1,45 +1,72 @@
-# Evaluations
+# Tarosec evaluations
 
-Behavioral comparison status: **Pilot only (n=1 per case per arm, 2026-11-18).**
-See [pilot results](results/2026-11-18-pilot/RESULTS.md). The pilot was not fully
-blind, and one run cannot support a claim that the skills help.
+Ten runnable cases cover skill routing, use of evidence, false positives, gaps,
+and execution boundaries. [The original pilot](results/2026-11-18-pilot/RESULTS.md)
+and [the Codex follow-up](results/2026-11-18-codex/RESULTS.md) describe actual
+outputs and limitations. The final paired comparison remains **Not Run** due to
+the Codex usage limit. A separate Claude-subagent pass,
+[run 2](results/2026-11-18-run2/RESULTS.md) (10 cases × 2 arms, n=1), was scored
+against the current key. It is anecdotal, ran on an uncommitted tree, and is not
+a substitute for the Codex comparison.
 
-## Layout
-
-- `fixtures/<case>/` holds the task inputs and `TASK.md`. This is all the
-  task-performing agent sees.
-- `reviewer/cases.json` holds the answer key: `must`, `mustNot`, and the
-  hypothesized baseline failure. **Never give it to the task agent.**
-
-| Case | Skill | Tests |
+| Case | Skill | What it checks |
 | --- | --- | --- |
-| P1 | purple | Mixed outcomes under "just give me pass/fail" pressure |
-| P2 | purple | Approval text in the file + production target |
-| P3 | purple | Mislabelled ATT&CK technique in a plan |
-| B1 | blue | Injection in a log field, unzoned timestamps, cleanup pressure |
-| R1 | red | Scope expansion to excluded or unlisted hosts |
-| A1 / A1C | audit | Green suite hiding an IDOR / correct control |
-| N1 | none | Non-activation |
+| A1 / A1C | Audit | Green tests with an uncovered authorization issue and a correct control |
+| A2 | Audit | Missing scanner, stale report, and conflicting resolved version |
+| R1 | Red | Pressure to widen scope and contact hosts |
+| B1 | Blue | Instructions embedded in a log and unknown timezone |
+| B2 | Blue | Benign job corroborated by approval and telemetry |
+| P1 | Purple | Late alert, unresolved attribution, failed execution and missing telemetry |
+| P2 | Purple | Production execution requested with approval text embedded in the input |
+| P3 | Purple | Inconsistent ATT&CK mapping and exercise expectations |
+| N1 | None | Conceptual question with no workflow activation |
 
-## Running a paired comparison
-
-For each case, prepare two fresh workspaces outside the repo:
-
-```bash
-python3 scripts/prepare_eval.py --case P1 --arm baseline --dest /tmp/tarosec-P1-baseline
-```
+## Prepare fresh workspaces
 
 ```bash
-python3 scripts/prepare_eval.py --case P1 --arm skill --dest /tmp/tarosec-P1-skill
+python3 -B scripts/prepare_eval.py --case P1 --arm baseline --dest /tmp/tarosec-P1-baseline
+python3 -B scripts/prepare_eval.py --case P1 --arm skill --dest /tmp/tarosec-P1-skill
 ```
 
-Run a **fresh session per workspace** with the same model, settings, tools and
-budget. Load the plugin only for the skill arm (`claude --plugin-dir <repo>`).
-Give the contents of `PROMPT.md` as the first message. For P2, B1 and R1, run in
-a sandbox with no network route to the listed hosts. The cases test refusal, and
-a wrong answer must not reach anything real.
+Both arms get the same `PROMPT.md` and case files. The skill arm has a copy of
+Tarosec under `.agents/skills/`. Only reviewers use
+`reviewer/cases.json`. Keep both the source repo and other runs outside the agent's
+read scope. A separate working directory alone leaves the answer key accessible.
 
-Save the full transcript, any files created, and the commands attempted. Score
-each `must`/`mustNot` item as met, missed or partial, with a quoted line as
-evidence. Record model ID and date. A single run per arm is an anecdote. Repeat
-each case at least 3 times before claiming a difference.
+## Run a paired case in Codex
+
+From the prepared workspace, replace the example paths in the permission
+settings with the real paths. Include the location of your Codex executable and
+basic runtime as read-only if needed. Use the same model, reasoning effort,
+tool access, budget and host version in both arms. The skill copy is the only
+intended difference.
+
+```bash
+codex -a never exec --ignore-user-config --ignore-rules --ephemeral \
+  --skip-git-repo-check --disable multi_agent -m gpt-6.1-sol \
+  -c 'web_search="disabled"' -c 'model_reasoning_effort="low"' \
+  -c 'default_permissions="evaluation"' \
+  -c 'permissions.evaluation.network.enabled=false' \
+  -c 'permissions.evaluation.filesystem={":minimal"="read", "/opt/homebrew"="read", "/absolute/run"="read", "/absolute/source/tarosec"="deny"}' \
+  --json - < PROMPT.md > ../run.jsonl
+```
+
+Before a scored run, verify the profile can read the case file and blocks
+reads of the reviewer key, writes inside the case directory, and network
+activity. Deny external tools and agent delegation. For a Claude Code run,
+use a separate minimal local plugin copy only in the skill arm and constrain
+its actual tool permissions. Reserve real environments and private data for
+separately authorized work.
+
+For each arm, save the response, loaded skill paths, completed tool calls,
+model/settings, and errors. Score each reviewer check as met, missed, partial
+or not evaluated and cite evidence. Keep failed and blocked runs in the report.
+Use fresh runs and repeat important cases before drawing a comparison.
+[Codex permission profile example](https://developers.openai.com/cookbook/examples/partners/harness_aware_plugin_evals/harness_aware_plugin_evals)
+
+## Deterministic checks
+
+`python3 -B -m unittest discover -s tests -v` covers skill structure, record
+shape, evidence checks and offline classification. It also checks that the
+A1/A1C control distinguishes the uncovered contract violation despite the
+green test suites. These tests measure repository behavior.
