@@ -55,6 +55,18 @@ a new agent session and request `$tarosec ./project` or `$tarosec simulate suspi
 The [Skills directory](https://skills.sh/docs/faq) discovers public skills from
 installation activity.
 
+## Download from npm
+
+To use the packaged skill files and Python helpers directly, install
+[`tarosec@0.1.0`](https://www.npmjs.com/package/tarosec/v/0.1.0) in your project.
+
+```bash
+npm install tarosec@0.1.0
+```
+
+The package stores the six skills under `node_modules/tarosec/skills/`. Use
+`npx skills add refactorroom/tarosec` to register the skills with your agent.
+
 ## Install from a local checkout
 
 Run from the project where you want to use Tarosec. Replace the source path with

@@ -26,10 +26,7 @@ copies them into `.claude/skills/`. Restart the agent after installing.
 
 ## GitHub installation and updates
 
-The public `refactorroom/tarosec` default branch listed four skills at commit
-`1e6e33f` on 2026-11-18. The local checkout contains subsequent changes. Use
-the local installation above for this working tree. The GitHub commands below
-operate on the remote revision.
+The public `refactorroom/tarosec` repository contains all six skills.
 
 ```bash
 npx skills@1.9.0 add refactorroom/tarosec --list
@@ -37,15 +34,21 @@ npx skills@1.9.0 add refactorroom/tarosec --skill tarosec-audit --agent codex -y
 npx skills@1.9.0 update --project
 ```
 
-Once the enhancement is available on the remote, select either new skill with
+Select either new skill with
 `npx skills add refactorroom/tarosec --skill tarosec` or
-`npx skills add refactorroom/tarosec --skill tarosec-simulate`. The Skills CLI
-1.9.0 installation check for these two skills used the local source.
+`npx skills add refactorroom/tarosec --skill tarosec-simulate`. Both selectors
+were verified against GitHub using Skills CLI 1.9.0.
 
 For a local source, reinstall from the updated checkout. For an intentional
 user-level installation, add `--global` to `add`, `list`, `update`, or `remove`.
 The release checks used disposable project directories. They did not install a
 global copy.
+
+## npm package
+
+Run `npm install tarosec@0.1.0` to download the published release. Its six
+skill directories and Python helpers are under `node_modules/tarosec/skills/`.
+Run `npx skills add refactorroom/tarosec` for agent discovery.
 
 ## Other installation paths
 

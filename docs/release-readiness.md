@@ -1,12 +1,14 @@
 # Tarosec v0.1.0 release readiness
 
-**Status on 2026-11-18.** The offline implementation is verified locally. Remote
-distribution and the final paired behavior comparison remain open.
+**Status on 2026-11-18.** Version `0.1.0` is published on npm and the GitHub
+repository serves all six skills. The `v0.1.0` Git tag identifies the source
+commit recorded by npm, `e0f05dd`.
+[npm release](https://www.npmjs.com/package/tarosec/v/0.1.0)
 
 ## Implemented
 
-- Four standalone skills for audit, offline assessment, telemetry investigation,
-  and detection validation. Each skill packages its references, shared contracts,
+- Six standalone skills for routing, audit, offline assessment, telemetry
+  investigation, detection validation, and simulation. Each skill packages its references, shared contracts,
   validator and notices.
 - Versioned engagement, finding, evidence, case and exercise records. Panda case
   IDs can be preserved via the documented manual mapping.
@@ -19,15 +21,16 @@ distribution and the final paired behavior comparison remain open.
 
 | Check | Observed result |
 | --- | --- |
-| Unit and fixture suite | 30 passing tests on Python 3.10.20, 3.14.7 and 3.15.0. Initial checkout had 21 passing tests. |
-| Schema conformance | Five schemas passed the Draft 2020-12 metaschema check. Example records passed schema validation. |
+| Unit and fixture suite | 39 tests passed on Python 3.10 and 3.15. |
+| Schema conformance | Nine schemas and twelve generated records passed Draft 2020-12 validation. |
 | Shared-file integrity | Sync check passed. |
 | Purple baseline and retest | S1 produced Detection gap, then Detected with a recorded delay of 12 seconds. The mixed fixture preserved three Inconclusive steps. |
 | Vercel Skills CLI 1.9.0 | Local checkout discovery, individual and all-skill project copies, listing, and removal passed for Codex and Claude Code target directories. The installed Purple copy ran successfully. |
 | Codex CLI 0.159.2 | Purple discovery and skill reads were observed. One preliminary non-activation pair completed. The final paired evaluation was blocked by the account usage limit. |
 | Claude Code 2.1.251 | Marketplace manifest validation passed. Native session invocation was unverified because the CLI was logged out. |
-| GitHub default branch | Public repository exists under `refactorroom`. The initial check found zero skills at `7cc90fd`. A second check listed all four at `1e6e33f`. The working-tree changes are local. |
-| GitHub Actions | Workflow defined. Local commands passed. The hosted workflow is unrun. |
+| GitHub distribution | Skills CLI discovered six skills and installed the entry point and simulator from `refactorroom/tarosec`. |
+| npm distribution | `latest` resolves to `0.1.0`. An isolated install contained all six skills, and its simulator produced five events and an Inconclusive outcome. |
+| GitHub Actions | Hosted validation and GitHub Pages deployment passed. |
 
 [Installation commands](install.md) ·
 [Evaluation outcomes](../evaluations/results/2026-11-18-codex/RESULTS.md) ·
@@ -49,10 +52,7 @@ comparisons, and the report identifies one missing answer and unverified traces.
   supported constraints. Reference resolution and source authenticity need review.
 - The existing MIT license is retained and upstream notices are bundled. Any
   future license change requires a rights review.
-- Before remote distribution, verify authority to publish, rerun remote discovery
-  and installation from the release revision, and run the hosted checks. Private
-  vulnerability reporting is disabled on the public repository. The security
-  policy explains how to request a private channel.
+- The security policy explains how to request a private channel for findings.
 
 ## v0.2 priorities
 

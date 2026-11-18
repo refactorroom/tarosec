@@ -1,6 +1,6 @@
 # Security policy
 
-The v0.1 line is the intended supported release. It is currently unreleased.
+The v0.1 line is the current supported release.
 
 Send vulnerability details privately to a maintainer. Private vulnerability
 reporting is currently disabled on GitHub. If you need a contact, open an issue

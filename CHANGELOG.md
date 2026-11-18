@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 (unreleased)
+## 0.1.0 (2026-11-18)
 
 - Unified Tarosec entry point with specialist availability checks and an offline fallback.
 - Standalone simulation skill with a three-scenario catalog, reproducible replay, and evidence reports that feed Purple.
@@ -9,3 +9,4 @@
 - Offline Purple classifier with per-rule evidence, partial detection and inconclusive attribution.
 - Prerecorded detection and retest examples, split evaluation fixtures and repository CI checks.
 - Project installation through the Agent Skills CLI and a local Claude Code plugin manifest.
+- Public npm distribution as `tarosec@0.1.0` and a GitHub Pages project site.
