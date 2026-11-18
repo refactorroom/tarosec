@@ -36,7 +36,7 @@ The GitHub selector is `npx skills add refactorroom/tarosec --skill tarosec-repo
 
 ## GitHub installation and updates
 
-The public `refactorroom/tarosec` repository contains all six skills.
+The public `refactorroom/tarosec` repository contains seven skills in v0.2.0.
 
 ```bash
 npx skills@1.9.0 add refactorroom/tarosec --list
@@ -44,10 +44,9 @@ npx skills@1.9.0 add refactorroom/tarosec --skill tarosec-audit --agent codex -y
 npx skills@1.9.0 update --project
 ```
 
-Select either new skill with
-`npx skills add refactorroom/tarosec --skill tarosec` or
-`npx skills add refactorroom/tarosec --skill tarosec-simulate`. Both selectors
-were verified against GitHub using Skills CLI 1.9.0.
+Install Report with
+`npx skills add refactorroom/tarosec --skill tarosec-report`. The v0.2.0
+GitHub release includes Report and the other six skills.
 
 For a local source, reinstall from the updated checkout. For an intentional
 user-level installation, add `--global` to `add`, `list`, `update`, or `remove`.
@@ -56,7 +55,9 @@ global copy.
 
 ## npm package
 
-Install the published package and sync its skills into your Codex project.
+The published npm package is v0.1.0 and contains six skills. To use v0.2.0,
+install from GitHub as shown above. Install the npm package and sync its skills
+into your Codex project with:
 
 ```bash
 npm install tarosec@0.1.0

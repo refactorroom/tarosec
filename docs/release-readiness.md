@@ -5,9 +5,9 @@ repository serves all six skills. The `v0.1.0` Git tag identifies the source
 commit recorded by npm, `e0f05dd`.
 [npm release](https://www.npmjs.com/package/tarosec/v/0.1.0)
 
-## Unreleased reporting specialist
+## v0.2.0 reporting specialist
 
-The working tree adds a seventh skill and the versioned reporting bundle. Local release checks and behavioral evaluation status are recorded in the [report evaluation](../evaluations/results/report/RESULTS.md). The published v0.1.0 checks below refer to the six-skill release.
+The GitHub v0.2.0 release adds a seventh skill and the versioned reporting bundle. npm remains at v0.1.0 because publishing requires one-time authentication. Local release checks and behavioral evaluation status are recorded in the [report evaluation](../evaluations/results/report/RESULTS.md). The v0.1.0 checks below refer to the six-skill release.
 
 ## Implemented
 
