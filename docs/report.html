@@ -3,21 +3,96 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Report | Tarosec</title>
+  <meta name="description" content="Consolidate Tarosec records into evidence-backed security reports.">
+  <title>Report workflow | Tarosec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="section wrap">
-    <nav class="reference-nav" aria-label="Tarosec workflows"><a href="index.html#workflows">All workflows</a><a href="audit.html">Audit</a><a href="red.html">Red</a><a href="blue.html">Blue</a><a href="purple.html">Purple</a><a href="simulate.html">Simulate</a><a href="report.html" aria-current="page">Report</a></nav>
+  <header class="header wrap">
+    <a class="brand" href="index.html"><img src="assets/tarosec-reference-logo.png" alt="Tarosec"></a>
+    <a class="nav-github" href="index.html#install">Install Tarosec</a>
+  </header>
+  <main class="wrap reference-page">
     <h1>Report</h1>
-    <p>Consolidate supplied security records, trace findings to evidence, and surface verification gaps.</p>
-    <ul>
-      <li><code>$tarosec report ./cases</code> prepares a summary.</li>
-      <li><code>$tarosec-report technical ./cases</code> prepares a developer report.</li>
-      <li><code>$tarosec-report coverage ./exercises</code> reviews recorded detection outcomes.</li>
-    </ul>
-    <p>The Python helper exports Markdown, structured JSON, and an evidence manifest locally.</p>
-    <p><a href="https://github.com/refactorroom/tarosec/tree/main/examples/reporting">Worked reporting example</a></p>
+    <p class="intro">Bring security findings and evidence together, explain their impact, and make outstanding verification work visible.</p>
+    <nav class="reference-nav" aria-label="Tarosec workflows"><a href="index.html#workflows">All workflows</a><a href="audit.html">Audit</a><a href="red.html">Red</a><a href="blue.html">Blue</a><a href="purple.html">Purple</a><a href="simulate.html">Simulate</a><a href="report.html" aria-current="page">Report</a></nav>
+    <article class="reference-content">
+      <section>
+        <h2>Get started</h2>
+        <p>Ask your agent for a report from the records you provide. The default is a concise summary. Name a mode and audience when you need a particular format.</p>
+        <pre><code>$tarosec report ./cases
+
+$tarosec-report technical ./cases
+Explain the findings for the engineering team and cite the evidence IDs.
+
+$tarosec-report executive ./cases
+Summarize the risks and decisions for management.</code></pre>
+        <p>These are agent requests. The Python commands below are separate local helpers. If the Report specialist is missing, the entry point gives its installation selector and can provide a limited read-only summary.</p>
+        <pre><code>npx skills add refactorroom/tarosec --skill tarosec-report</code></pre>
+      </section>
+      <section>
+        <h2>What to provide</h2>
+        <p>Supply Tarosec finding, evidence, case, engagement, exercise, or simulation-result records and any referenced artifacts. Include scope, collection times, source revisions, and tool status when available. Evidence records use stable IDs to connect findings to artifacts.</p>
+        <p>Keep original evidence in an authorized location. Provide sanitized material for the intended audience and identify missing exports or collection windows.</p>
+      </section>
+      <section>
+        <h2>Modes</h2>
+        <dl>
+          <div><dt><code>summary</code></dt><dd>Finding counts, leading risks, coverage limits, and unresolved questions.</dd></div>
+          <div><dt><code>technical</code></dt><dd>Affected components, supported causes, evidence, remediation, and regression checks for developers.</dd></div>
+          <div><dt><code>executive</code></dt><dd>Business risks, priorities, confidence, and decisions for management.</dd></div>
+          <div><dt><code>incident</code></dt><dd>Recorded chronology, affected assets, alternate explanations, and response recommendations.</dd></div>
+          <div><dt><code>coverage</code></dt><dd>Exercise outcomes, detection and telemetry gaps, and the basis for any rate.</dd></div>
+          <div><dt><code>remediation</code></dt><dd>Prioritized actions, finding IDs, supplied ownership, and verification criteria.</dd></div>
+          <div><dt><code>compare</code></dt><dd>Changes between explicitly identified baseline and retest records.</dd></div>
+          <div><dt><code>validate</code></dt><dd>Review sources, evidence links, consistency, completeness, and provenance.</dd></div>
+        </dl>
+      </section>
+      <section>
+        <h2>How evidence is handled</h2>
+        <ol>
+          <li>Validate supplied records and reconcile IDs. Conflicting IDs and missing references remain visible as gaps.</li>
+          <li>Check an artifact against its recorded SHA-256 when both are available. A matching digest establishes byte consistency with the reference. Authenticity and support for the claim still need review.</li>
+          <li>Preserve severity, confidence, finding status, verification status, claim strength, incident classification, and detection outcome as separate facts.</li>
+          <li>Cite the evidence and explain the limits of each conclusion. Missing evidence does not establish that an issue is absent or fixed.</li>
+        </ol>
+      </section>
+      <section>
+        <h2>Generate a local bundle</h2>
+        <p>From a Tarosec checkout with Python 3.10 or later, choose a new output directory outside the input directory. The parent directory must already exist.</p>
+        <pre><code>python3 -B skills/tarosec-report/scripts/generate_report.py \
+  ./cases --type technical --output ./reports
+
+python3 -B skills/tarosec-report/scripts/validate_report.py \
+  ./reports/report.json --bundle --input ./cases</code></pre>
+        <p>The output contains <code>report.md</code>, <code>report.json</code>, and <code>evidence-manifest.json</code>. The structured export omits source free text. An agent can prepare audience-specific prose after reviewing sanitized evidence.</p>
+        <p>The generator can succeed while reporting verification gaps. Validation with <code>--bundle</code> checks the companion files, and <code>--input</code> also recomputes the report from supplied records and artifacts. Use <code>--overwrite</code> only to replace an existing Tarosec report bundle.</p>
+      </section>
+      <section>
+        <h2>Compare a baseline and retest</h2>
+        <p>Provide both record IDs. When versions of the same finding differ, place them in separate snapshot directories. Exercise comparisons use a retest linked with <code>retestOf</code> and stable step IDs.</p>
+        <pre><code>python3 -B skills/tarosec-report/scripts/generate_report.py \
+  ./baseline --type compare --retest ./retest \
+  --baseline-id CASE-BEFORE --retest-id CASE-AFTER \
+  --output ./comparison</code></pre>
+        <p>A missing retest, incompatible exercise, or unavailable supporting evidence leaves the comparison inconclusive. Absence from a later export alone does not establish a fix.</p>
+      </section>
+      <section>
+        <h2>Read detection coverage</h2>
+        <p>Each exercise step retains its recorded outcome, including late or partial detection, prevention, gaps, inconclusive results, and steps that did not run. The helper counts full detections, including late detections, among eligible steps with hash-matched evidence. The eligible denominator includes full and partial detections and detection gaps. Simulation-linked, prevented, unrun, inconclusive, and telemetry-gap steps are excluded.</p>
+        <p>When no steps qualify, the rate is unavailable. Interpret any rate within the supplied exercise and collection window.</p>
+      </section>
+      <section>
+        <h2>Example report</h2>
+        <p>The synthetic queue-alert example includes a matching marker digest and a missing alert export. Its report preserves the finding and marks assessment confidence as unknown.</p>
+        <p><a class="text-link" href="https://github.com/refactorroom/tarosec/blob/main/examples/reporting/bundle/report.md">Read the example report ↗</a></p>
+        <p><a class="text-link" href="https://github.com/refactorroom/tarosec/tree/main/skills/tarosec-report">Explore the skill and reference guides ↗</a></p>
+      </section>
+    </article>
   </main>
+  <footer><div class="wrap footer-inner"><strong>Tarosec</strong><div class="footer-links"><a href="index.html#workflows">Workflows</a><a href="index.html#install">Install</a></div></div></footer>
 </body>
 </html>
