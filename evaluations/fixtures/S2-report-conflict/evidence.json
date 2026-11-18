@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "tarosec.evidence/v1",
+  "id": "EV-ALERT-01",
+  "source": "synthetic collector",
+  "collectionMethod": "fixture export",
+  "collectedAt": "2026-11-18T08:05:00+07:00",
+  "originalTimezone": "unknown",
+  "artifactPath": "alert-marker.txt",
+  "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "sensitivity": "public",
+  "integrity": "hash-recorded"
+}

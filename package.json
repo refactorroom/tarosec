@@ -1,6 +1,6 @@
 {
   "name": "tarosec",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Offline cybersecurity skills for audit, investigation, and detection validation",
   "license": "MIT",
   "repository": {
@@ -11,8 +11,18 @@
   "bugs": {
     "url": "https://github.com/refactorroom/tarosec/issues"
   },
-  "keywords": ["agent-skills", "security", "cybersecurity", "detection", "audit"],
-  "files": ["skills", "LICENSE", "SOURCE_NOTICES.md"],
+  "keywords": [
+    "agent-skills",
+    "security",
+    "cybersecurity",
+    "detection",
+    "audit"
+  ],
+  "files": [
+    "skills",
+    "LICENSE",
+    "SOURCE_NOTICES.md"
+  ],
   "engines": {
     "node": ">=18"
   }

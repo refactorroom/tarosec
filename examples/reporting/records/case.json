@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "tarosec.case/v1",
+  "id": "CASE-QUEUE-01",
+  "title": "Queue delay review",
+  "status": "inconclusive",
+  "evidenceRefs": [
+    "EV-ALERT-01"
+  ],
+  "findingRefs": [
+    "F-QUEUE-01"
+  ]
+}

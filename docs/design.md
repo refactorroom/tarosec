@@ -1,6 +1,6 @@
 # Architecture
 
-Tarosec has a dispatcher and five independently installable specialist skills.
+Tarosec has a dispatcher and six independently installable specialist skills.
 The dispatcher selects one available specialist without invoking a host-specific
 API. Simulation produces evidence and uses the same classifier as Purple.
 Each skill has a short entry point,
@@ -15,6 +15,9 @@ and the relevant references on demand. There is no service to start.
 | Red | A scope or exposure question about supplied asset lists, engagement records or scan reports | Offline inventory, scope decisions and assessment evidence |
 | Blue | A question about supplied logs, alerts, indicators or detection rules | Timeline, classification, alternate explanations and gaps |
 | Purple | A question about whether a recorded or synthetic exercise produced expected observations | Per-step outcomes, deciding evidence and retest status |
+
+| Simulate | Prerecorded or synthetic data | Local fixture and simulation result |
+| Report | Supplied findings, evidence, cases, exercises and simulation results | Reconciled evidence, gaps and structured reporting |
 
 General security explanations need no Tarosec workflow. Audit can pass a finding
 ID to Red for corroboration. Blue can supply telemetry provenance or a rule
@@ -33,6 +36,8 @@ Canonical JSON Schemas are in [schemas](../schemas). The record's
 | Evidence | Artifact provenance, collection time, original timezone, optional hash and custody |
 | Case | References to assets, findings, evidence, exercises and activities |
 | Exercise | Expected observations per step, recorded observations, evidence and optional retest linkage |
+
+Report uses `tarosec.report/v1` to reference source IDs and digests, with a companion evidence manifest. It reuses the Purple classifier for recorded steps and keeps simulation outcomes outside the detection rate.
 
 The bundled validator checks field shape and supported JSON Schema constraints.
 Cross-file references, coverage of an alert export, timestamps, scope and

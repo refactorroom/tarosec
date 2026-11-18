@@ -1,6 +1,6 @@
 # Tarosec
 
-![Tarosec dog mascot and wordmark](design/tarosec-dog-logo-concept.png)
+![Tarosec dog mascot and wordmark](design/tarosec-reference-logo.png)
 
 **Assess. Defend. Validate. Improve.**
 
@@ -17,6 +17,7 @@ these requests in your coding agent.
 - `$tarosec blue ./logs` investigates supplied telemetry.
 - `$tarosec simulate suspicious-login` generates a synthetic fixture and report.
 - `$tarosec verify ./case` selects Audit or Purple based on the supplied evidence.
+- `$tarosec report ./cases` consolidates supplied findings and evidence.
 - `$tarosec help` lists workflows and explains any missing specialists.
 
 The entry point checks which specialists are installed before choosing a
@@ -29,6 +30,9 @@ workflow. The existing specialists remain available for direct use.
 | [Tarosec Blue](skills/tarosec-blue/SKILL.md) | Investigate supplied telemetry and design or verify detection logic | `hunt`, `triage`, `logs`, `detect`, `verify`, `monitor` |
 | [Tarosec Purple](skills/tarosec-purple/SKILL.md) | Compare recorded exercise steps with expected telemetry and alerts | `plan`, `exercise`, `emulate`, `validate`, `coverage`, `retest` |
 | [Tarosec Simulate](skills/tarosec-simulate/SKILL.md) | Generate controlled event records or replay sanitized evidence | `list`, `synthetic`, `replay` |
+| [Tarosec Report](skills/tarosec-report/SKILL.md) | Consolidate supplied records, check evidence, and prepare reports | `summary`, `technical`, `executive`, `incident`, `coverage`, `remediation`, `compare`, `validate` |
+
+See the [report walkthrough](examples/reporting/README.md) for standalone use.
 
 Use the modes as cues in an agent request. The deterministic Python helpers
 require Python 3.10 or later.
@@ -55,6 +59,51 @@ a new agent session and request `$tarosec ./project` or `$tarosec simulate suspi
 The [Skills directory](https://skills.sh/docs/faq) discovers public skills from
 installation activity.
 
+### Install in Kilo
+
+From the project you open in Kilo Code, Kilo CLI, or Kilo Desktop, run:
+
+```bash
+npx skills add refactorroom/tarosec --agent kilo
+```
+
+Install just the entry point and Audit skill if you only need source review:
+
+```bash
+npx skills add refactorroom/tarosec --agent kilo --skill tarosec --skill tarosec-audit
+```
+
+Add `--global` for a user-level install. Start a new Kilo session or run
+`/reload`, then type `/tarosec` in the chat or ask “Use the tarosec skill to
+audit this project.” Skills are loaded by Kilo separately from your model
+provider settings. [Kilo skill discovery](https://kilo.ai/docs/customize/skills)
+
+**Manual install.** Copy each whole directory from Tarosec’s `skills/` folder,
+including its references and helper scripts. Keep `SKILL.md` directly inside
+the skill folder. Use one of Kilo’s discovery paths:
+
+| Scope | macOS or Linux | Windows |
+| --- | --- | --- |
+| Project | `.kilo/skills/<name>/SKILL.md` | `.kilo\skills\<name>\SKILL.md` |
+| Global, Kilo | `~/.kilo/skills/<name>/SKILL.md` | `%USERPROFILE%\.kilo\skills\<name>\SKILL.md` |
+| Global, shared across agents | `~/.agents/skills/<name>/SKILL.md` | `%USERPROFILE%\.agents\skills\<name>\SKILL.md` |
+
+Kilo also discovers project skills in `.agents/skills/` by default. This is
+where the project-level Skills CLI install places Tarosec. If a skill does not
+appear after reloading, check the folder depth and confirm `SKILL.md` has
+`name` and `description` in its YAML frontmatter.
+
+**Marketplace.** For skills listed in Kilo’s catalog, open **Marketplace** in
+the Kilo sidebar or **Settings → AI settings → Add** in Kilo Desktop. Select a
+skill and choose **Project** or **Global** before installing. Use the GitHub
+command above to install Tarosec directly. [Kilo Marketplace](https://kilo.ai/docs/customize/marketplace) · [Kilo Desktop AI settings](https://kilo.ai/docs/desktop/settings/ai)
+
+**Custom locations.** Use `skills.paths` in `kilo.jsonc` for extra local skill
+directories. Declare paths outside the project in user-level config. Use
+`skills.urls` only for a hosted skill directory with an `index.json` manifest.
+Each manifest entry includes a skill name and a file list containing `SKILL.md`.
+An optional version tells Kilo when to refresh its cache. [Kilo custom skill paths and URLs](https://kilo.ai/docs/customize/skills#additional-skill-paths-and-remote-urls)
+
 ## Download from npm
 
 To use the packaged skill files and Python helpers directly, install
@@ -64,7 +113,7 @@ To use the packaged skill files and Python helpers directly, install
 npm install tarosec@0.1.0
 ```
 
-The package stores the six skills under `node_modules/tarosec/skills/`. Use
+The published 0.1.0 package stores six skills under `node_modules/tarosec/skills/`. Use
 `npx skills add refactorroom/tarosec` to register the skills with your agent.
 
 ## Install from a local checkout
@@ -82,6 +131,10 @@ Select a single skill with `--skill tarosec-purple`, or choose one agent with
 `--agent codex` or `--agent claude-code`. These project-level commands were
 checked locally with Vercel Skills 1.9.0. For a session-only Claude Code plugin,
 use `claude --plugin-dir /path/to/tarosec`. See [installation and troubleshooting](docs/install.md).
+
+## Project workspace
+
+When you use a Tarosec skill on a project, the skill initializes `.tarosec/runs/` in that project and adds `/.tarosec/` to its `.gitignore`. Each request gets a separate run directory for its reports and evidence. The dispatcher passes the same directory to the selected specialist. The project’s existing ignore rules and workspace files are preserved.
 
 ## Try it offline
 

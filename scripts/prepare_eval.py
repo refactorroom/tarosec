@@ -38,9 +38,12 @@ def main() -> int:
         print("destination must be outside the tarosec repository", file=sys.stderr)
         return 2
     shutil.copytree(FIXTURES / cases[a.case]["fixture"], dest)
+    if cases[a.case].get("reportExample"):
+        shutil.copytree(ROOT / "examples" / "reporting" / "records", dest / "records")
     shutil.copyfile(dest / "TASK.md", dest / "PROMPT.md")
-    if a.arm == "skill":
-        installed = cases[a.case].get("installedSkills")
+    arm = cases[a.case]
+    if a.arm == "skill" or "baselineSkills" in arm:
+        installed = arm.get("installedSkills" if a.arm == "skill" else "baselineSkills")
         skill_root = dest / ".agents" / "skills"
         ignore = shutil.ignore_patterns("__pycache__", "*.pyc")
         if installed is None:

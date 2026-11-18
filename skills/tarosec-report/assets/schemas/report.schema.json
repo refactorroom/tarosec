@@ -1,0 +1,365 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tarosec:report:v1",
+  "title": "Tarosec report v1",
+  "description": "Structured local report. Source findings and raw evidence remain separate.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "type", "snapshots"],
+  "properties": {
+    "schemaVersion": {"const": "tarosec.report/v1"},
+    "id": {
+      "type": "string",
+      "pattern": "^REPORT-[a-f0-9]{64}$"
+    },
+    "type": {"enum": ["summary", "technical", "executive", "incident", "coverage", "remediation", "compare"]},
+    "generatedAt": {
+      "type": "string",
+      "pattern": "^(unknown|[0-9TtZz:+.,-]{1,40})$"
+    },
+    "snapshots": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "sources", "gaps", "findings", "evidence", "cases", "scope", "exercises", "simulations", "metrics"],
+        "properties": {
+          "label": {"enum": ["supplied", "baseline", "retest"]},
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind", "id", "inputIndex", "contentSha256"],
+              "properties": {
+                "kind": {"enum": ["case", "engagement", "evidence", "exercise", "finding", "simulation-result"]},
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+                },
+                "inputIndex": {"type": "integer", "minimum": 0},
+                "contentSha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            }
+          },
+          "gaps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["code"],
+              "properties": {
+                "code": {"enum": ["symbolic-link-skipped", "input-entry-limit", "unreadable-or-malformed-json", "unsupported-record", "invalid-record", "unsafe-identifier", "conflicting-id", "duplicate-id", "no-usable-records", "unresolved-reference", "evidence-integrity-unresolved", "timestamp-or-timezone-unknown", "finding-evidence-unverified", "unsafe-step-id", "duplicate-step-id", "exercise-timing-unresolved", "exercise-evidence-unverified", "outcome-disagreement", "coverage-denominator-unavailable", "simulation-outcome-unresolved", "scope-unsupplied", "case-activity-evidence-unverified"]},
+                "kind": {"enum": ["case", "engagement", "evidence", "exercise", "finding", "simulation-result"]},
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+                },
+                "targetKind": {"enum": ["case", "engagement", "evidence", "exercise", "finding", "simulation-result"]},
+                "reference": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+                },
+                "inputIndex": {"type": "integer", "minimum": 0}
+              }
+            }
+          },
+          "findings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "producer", "severity", "confidence", "status", "claimStrength", "assessmentConfidence", "evidenceRefs", "evidenceState"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+                },
+                "producer": {"enum": ["tarosec-audit", "tarosec-red", "tarosec-blue", "tarosec-purple"]},
+                "severity": {"enum": ["Critical", "High", "Medium", "Low", "Informational"]},
+                "confidence": {"enum": ["Confirmed", "Likely", "Unknown"]},
+                "status": {"enum": ["Potential weakness", "Verified vulnerability", "Simulation observation", "Detection gap", "Telemetry gap", "Informational", "False positive"]},
+                "claimStrength": {"enum": ["static-trace", "lab-reproduction", "observed-in-telemetry", "advisory-match", "reported-only"]},
+                "verificationStatus": {"enum": ["unverified", "confirmed", "fixed", "inconclusive"]},
+                "assessmentConfidence": {"enum": ["Confirmed", "Likely", "Unknown"]},
+                "evidenceRefs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+                  }
+                },
+                "evidenceState": {"enum": ["unresolved", "records-only", "hash-matched"]}
+              }
+            }
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "collectedAt", "originalTimezone", "recordedIntegrity", "artifactCheck", "sensitivity"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+                },
+                "collectedAt": {
+                  "type": "string",
+                  "pattern": "^(unknown|[0-9TtZz:+.,-]{1,40})$"
+                },
+                "originalTimezone": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_+:/-]{1,64}$"
+                },
+                "recordedIntegrity": {"enum": ["verified-against-reference", "hash-recorded", "mismatch", "no-artifact", "unknown"]},
+                "artifactCheck": {"enum": ["match", "mismatch", "no-reference", "hash-unavailable", "outside-input", "artifact-unavailable"]},
+                "sensitivity": {"enum": ["public", "internal", "confidential", "restricted"]},
+                "referenceSha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            }
+          },
+          "cases": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "status", "activities"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+                },
+                "status": {"enum": ["open", "closed", "inconclusive"]},
+                "activities": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["sequence", "at", "evidenceRefs", "evidenceState"],
+                    "properties": {
+                      "sequence": {"type": "integer", "minimum": 0},
+                      "at": {
+                        "type": "string",
+                        "pattern": "^(unknown|[0-9TtZz:+.,-]{1,40})$"
+                      },
+                      "evidenceRefs": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+                        }
+                      },
+                      "evidenceState": {"enum": ["unresolved", "records-only", "hash-matched"]}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "scope": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "environment", "assetCount", "windowStart", "windowEnd"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+                },
+                "environment": {"enum": ["offline", "laboratory", "staging", "production"]},
+                "assetCount": {"type": "integer", "minimum": 0},
+                "windowStart": {
+                  "type": "string",
+                  "pattern": "^(unknown|[0-9TtZz:+.,-]{1,40})$"
+                },
+                "windowEnd": {
+                  "type": "string",
+                  "pattern": "^(unknown|[0-9TtZz:+.,-]{1,40})$"
+                }
+              }
+            }
+          },
+          "exercises": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "environment", "simulationLinked", "steps"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+                },
+                "environment": {"enum": ["offline", "laboratory", "staging", "production"]},
+                "simulationLinked": {"type": "boolean"},
+                "steps": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["id", "outcome", "execution", "evidenceRefs", "evidenceState"],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+                      },
+                      "outcome": {
+                        "description": "Optional analyst annotation. The classifier derives its outcome from the observations.",
+                        "enum": [
+                          "Detected",
+                          "Detected (late)",
+                          "Partially detected",
+                          "Prevented",
+                          "Detection gap",
+                          "Telemetry gap",
+                          "Inconclusive",
+                          "Not run"
+                        ]
+                      },
+                      "reportedOutcome": {
+                        "description": "Optional analyst annotation. The classifier derives its outcome from the observations.",
+                        "enum": [
+                          "Detected",
+                          "Detected (late)",
+                          "Partially detected",
+                          "Prevented",
+                          "Detection gap",
+                          "Telemetry gap",
+                          "Inconclusive",
+                          "Not run"
+                        ]
+                      },
+                      "execution": {"enum": ["executed", "failed", "blocked", "not_run", "unknown"]},
+                      "evidenceRefs": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+                        }
+                      },
+                      "evidenceState": {"enum": ["unresolved", "records-only", "hash-matched"]},
+                      "technique": {
+                        "type": "string",
+                        "pattern": "^T[0-9]{4}(\\.[0-9]{3})?$"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "simulations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "outcome", "execution", "exerciseRefs", "evidence"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+                },
+                "mode": {"enum": ["synthetic", "replay"]},
+                "outcome": {"enum": ["detected", "not_detected", "partially_detected", "inconclusive", "not_executed"]},
+                "execution": {"enum": ["completed", "failed"]},
+                "eventCount": {"type": "integer", "minimum": 0},
+                "exerciseRefs": {
+                  "type": "array",
+                  "items": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"}
+                },
+                "evidence": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["id", "referenceSha256", "artifactChecks"],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+                      },
+                      "referenceSha256": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "artifactChecks": {
+                        "type": "array",
+                        "items": {"enum": ["match", "mismatch", "no-reference", "hash-unavailable", "outside-input", "artifact-unavailable"]}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "metrics": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["findingCount", "assessedFindingCount", "falsePositiveCount", "fullDetectionCount", "eligibleStepCount", "severityCounts"],
+            "properties": {
+              "findingCount": {"type": "integer", "minimum": 0},
+              "assessedFindingCount": {"type": "integer", "minimum": 0},
+              "falsePositiveCount": {"type": "integer", "minimum": 0},
+              "fullDetectionCount": {"type": "integer", "minimum": 0},
+              "eligibleStepCount": {"type": "integer", "minimum": 0},
+              "severityCounts": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["Critical", "High", "Medium", "Low", "Informational"],
+                "properties": {
+                  "Critical": {"type": "integer", "minimum": 0},
+                  "High": {"type": "integer", "minimum": 0},
+                  "Medium": {"type": "integer", "minimum": 0},
+                  "Low": {"type": "integer", "minimum": 0},
+                  "Informational": {"type": "integer", "minimum": 0}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baselineId", "retestId", "kind", "rows"],
+      "properties": {
+        "baselineId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "retestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "kind": {"enum": ["case", "exercise", "unknown"]},
+        "gap": {"enum": ["comparison-identities-unresolved", "comparison-incomplete"]},
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "before", "after", "assessment"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+              },
+              "before": {"enum": ["Detected", "Detected (late)", "Partially detected", "Prevented", "Detection gap", "Telemetry gap", "Inconclusive", "Not run", "unverified", "confirmed", "fixed", "inconclusive", "missing"]},
+              "after": {"enum": ["Detected", "Detected (late)", "Partially detected", "Prevented", "Detection gap", "Telemetry gap", "Inconclusive", "Not run", "unverified", "confirmed", "fixed", "inconclusive", "missing"]},
+              "assessment": {"enum": ["inconclusive", "unchanged", "verified-improvement", "verified-regression", "recorded-fix", "recorded-regression", "observed-change"]}
+            }
+          }
+        }
+      }
+    }
+  }
+}

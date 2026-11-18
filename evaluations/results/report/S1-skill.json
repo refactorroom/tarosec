@@ -1,0 +1,9 @@
+{
+  "status": "blocked by usage limit",
+  "trace": [
+    {
+      "type": "agent_message",
+      "text": "I\u2019ll use the tarosec-report skill to check the supplied case and evidence, then give you a brief manager-ready assessment."
+    }
+  ]
+}

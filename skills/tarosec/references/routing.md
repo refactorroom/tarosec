@@ -9,7 +9,7 @@
 | Simulate, generate events, or replay | Simulate for offline fixtures |
 | Verify | Audit for a source fix, Purple for detection retest |
 | Intel | Audit for supplied advisory review |
-| Report | Summarize supplied records with their evidence IDs and limits |
+| Report | Report for evidence-backed consolidation, validation, or comparison of supplied records |
 | Help | Explain the modes and available skills |
 
 The routing helper accepts a normalized mode. To route natural language, inspect
@@ -24,3 +24,6 @@ An installed specialist owns the work. For a missing specialist, use the
 `installSelector` in the response with the project's Skills CLI source.
 An entry-only install can provide a read-only inventory of supplied artifacts,
 cite existing records, and help the user choose a workflow.
+If Report is missing, give its installation selector and a limited read-only
+summary with evidence IDs and gaps. Reserve claims of a complete validated
+report for the specialist workflow.

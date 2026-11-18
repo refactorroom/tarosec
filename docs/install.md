@@ -24,6 +24,16 @@ Select all skills with `--skill '*'`, or substitute `tarosec-audit`,
 `.agents/skills/`. With `--copy` and the Claude Code agent selected, it also
 copies them into `.claude/skills/`. Restart the agent after installing.
 
+## Report specialist
+
+Install from a checkout containing Report.
+
+```bash
+npx skills add /path/to/tarosec --skill tarosec-report --agent codex --copy -y
+```
+
+The GitHub selector is `npx skills add refactorroom/tarosec --skill tarosec-report` once the remote branch includes the skill.
+
 ## GitHub installation and updates
 
 The public `refactorroom/tarosec` repository contains all six skills.

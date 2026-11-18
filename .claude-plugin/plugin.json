@@ -1,8 +1,18 @@
 {
   "name": "tarosec",
-  "version": "0.1.0",
-  "description": "Offline cybersecurity skills for source audit, assessment scope review, defensive investigation and detection validation.",
-  "author": {"name": "akkaraponph"},
+  "version": "0.2.0",
+  "description": "Offline cybersecurity skills for source audit, assessment scope review, defensive investigation, detection validation and reporting.",
+  "author": {
+    "name": "akkaraponph"
+  },
   "license": "MIT",
-  "keywords": ["security", "red-team", "blue-team", "purple-team", "detection", "audit", "skills"]
+  "keywords": [
+    "security",
+    "red-team",
+    "blue-team",
+    "purple-team",
+    "detection",
+    "audit",
+    "skills"
+  ]
 }

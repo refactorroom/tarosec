@@ -1,0 +1,40 @@
+{
+  "reportId": "REPORT-46b53f9da9320905004c4bb8496132c365e07c03c0fa0d5c74dbce721eac613f",
+  "snapshots": [
+    {
+      "evidence": [
+        {
+          "artifactCheck": "match",
+          "collectedAt": "2026-11-18T08:05:00+07:00",
+          "id": "EV-ALERT-01",
+          "originalTimezone": "+07:00",
+          "recordedIntegrity": "hash-recorded",
+          "referenceSha256": "20275042ba28a0ccd5bd6cdc6744bcfc0706a4f4413aecd2ccd99bb8a3769144",
+          "sensitivity": "public"
+        }
+      ],
+      "label": "supplied",
+      "simulations": [],
+      "sources": [
+        {
+          "contentSha256": "d4af432d272065a598ae2907f34e76d4243bfe40f6c2de6fca68e197e6a6bd76",
+          "id": "CASE-QUEUE-01",
+          "inputIndex": 1,
+          "kind": "case"
+        },
+        {
+          "contentSha256": "842ba65dd46444fe26318ae5881e74f2f59b10b158c2a0d61e3f8dd454f335a1",
+          "id": "EV-ALERT-01",
+          "inputIndex": 2,
+          "kind": "evidence"
+        },
+        {
+          "contentSha256": "2996bb78a8355a8f44815be3281daa5e72ec5613d981fab5eda32dfe8a1eed49",
+          "id": "F-QUEUE-01",
+          "inputIndex": 3,
+          "kind": "finding"
+        }
+      ]
+    }
+  ]
+}

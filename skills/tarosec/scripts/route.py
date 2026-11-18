@@ -7,20 +7,21 @@ ROUTES = {
     "audit": "tarosec-audit", "scan": "tarosec-audit", "red": "tarosec-red",
     "blue": "tarosec-blue", "logs": "tarosec-blue", "incident": "tarosec-blue",
     "purple": "tarosec-purple", "simulate": "tarosec-simulate",
-    "intel": "tarosec-audit", "verify": "tarosec-audit",
+    "intel": "tarosec-audit", "verify": "tarosec-audit", "report": "tarosec-report",
 }
 
 
 def route(mode, evidence, available):
-    if mode in ("help", "report"):
-        return {"action": mode, "modes": sorted([*ROUTES, "help", "report"])} if mode == "help" else {"action": "report"}
+    if mode == "help":
+        return {"action": "help", "modes": sorted([*ROUTES, "help"])}
     mode = mode or {"logs": "blue", "exercise": "purple"}.get(evidence, "audit")
     skill = "tarosec-purple" if mode == "verify" and evidence == "exercise" else ROUTES.get(mode)
     if skill is None:
         return {"action": "unsupported", "message": "Unknown mode. Use help for supported modes."}
     if skill in available:
         return {"action": "use", "skill": skill, "mode": mode}
-    return {"action": "missing", "skill": skill, "installSelector": skill, "fallback": "read-only inventory"}
+    fallback = "read-only report summary" if mode == "report" else "read-only inventory"
+    return {"action": "missing", "skill": skill, "installSelector": skill, "fallback": fallback}
 
 
 def main():

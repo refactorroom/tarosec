@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Report | Tarosec</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="section wrap">
+    <nav class="reference-nav" aria-label="Tarosec workflows"><a href="index.html#workflows">All workflows</a><a href="audit.html">Audit</a><a href="red.html">Red</a><a href="blue.html">Blue</a><a href="purple.html">Purple</a><a href="simulate.html">Simulate</a><a href="report.html" aria-current="page">Report</a></nav>
+    <h1>Report</h1>
+    <p>Consolidate supplied security records, trace findings to evidence, and surface verification gaps.</p>
+    <ul>
+      <li><code>$tarosec report ./cases</code> prepares a summary.</li>
+      <li><code>$tarosec-report technical ./cases</code> prepares a developer report.</li>
+      <li><code>$tarosec-report coverage ./exercises</code> reviews recorded detection outcomes.</li>
+    </ul>
+    <p>The Python helper exports Markdown, structured JSON, and an evidence manifest locally.</p>
+    <p><a href="https://github.com/refactorroom/tarosec/tree/main/examples/reporting">Worked reporting example</a></p>
+  </main>
+</body>
+</html>

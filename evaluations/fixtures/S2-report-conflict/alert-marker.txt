@@ -1,0 +1,1 @@
+Synthetic record for offline report testing.

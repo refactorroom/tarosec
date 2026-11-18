@@ -54,3 +54,7 @@ NIST SP 800-61 Rev. 3 phases when a confirmed incident needs a response plan.
 Deep incident case management and dated CVE/KEV intelligence are planned as
 separate skills (`tarosec-incident`, `tarosec-intel`); until then, keep them in
 clearly labelled sections and mark external intelligence with its retrieval date.
+
+## Project workspace
+
+For a project-scoped invocation, reuse the run directory provided by the dispatcher, or run `python3 scripts/init_workspace.py PROJECT --skill tarosec-blue` using the absolute helper path inside this skill. The helper creates a unique directory under the project’s `.tarosec/runs/` and adds `/.tarosec/` to the project `.gitignore`. Store requested reports and generated evidence in that run directory. If initialization fails, report the error and do not claim files were saved.

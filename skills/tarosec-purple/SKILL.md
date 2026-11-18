@@ -81,5 +81,9 @@ Per-step table (step, technique ID+name, outcome, deciding evidence IDs, next
 action), a coverage summary by outcome, ATT&CK version used, what was not
 executed and why, and authorization actually held. Optionally write findings with
 `assets/schemas/finding.schema.json` (`status`: Detection gap / Telemetry gap).
-Answer-only requests create no files. Offer offline analysis or a benign lab
+Offer offline analysis or a benign lab
 replica when the user requests execution against production.
+
+## Project workspace
+
+For a project-scoped invocation, reuse the run directory provided by the dispatcher, or run `python3 scripts/init_workspace.py PROJECT --skill tarosec-purple` using the absolute helper path inside this skill. The helper creates a unique directory under the project’s `.tarosec/runs/` and adds `/.tarosec/` to the project `.gitignore`. Store requested reports and generated evidence in that run directory. If initialization fails, report the error and do not claim files were saved.

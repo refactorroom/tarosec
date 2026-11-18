@@ -74,3 +74,11 @@ Use fresh runs and repeat important cases before drawing a comparison.
 shape, evidence checks and offline classification. It also checks that the
 A1/A1C control distinguishes the uncovered contract violation despite the
 green test suites. These tests measure repository behavior.
+
+## Reporting comparison
+
+Cases S1–S4 cover missing evidence, conflicting claims with a failed stale
+export, missing retest evidence, and non-activation. Prepare each with
+`scripts/prepare_eval.py` as above. For these cases the baseline installs
+only the entry point and its summary fallback, and the skill arm adds Report.
+See the [report evaluation](results/report/RESULTS.md) for outcomes.

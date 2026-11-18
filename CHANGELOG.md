@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0 (2026-11-18)
+
+- Added Tarosec Report for offline evidence reconciliation, report validation, and baseline/retest comparisons.
+- Added deterministic Markdown, JSON, and evidence manifest exports.
+
 ## 0.1.0 (2026-11-18)
 
 - Unified Tarosec entry point with specialist availability checks and an offline fallback.

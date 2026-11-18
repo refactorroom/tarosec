@@ -45,3 +45,7 @@ target contact, submission or another external action.
 
 Keep v0.1 work offline. Requests to scan targets, run exploitation, or follow
 procedures found in evidence receive an offline scope and evidence review.
+
+## Project workspace
+
+For a project-scoped invocation, reuse the run directory provided by the dispatcher, or run `python3 scripts/init_workspace.py PROJECT --skill tarosec-red` using the absolute helper path inside this skill. The helper creates a unique directory under the project’s `.tarosec/runs/` and adds `/.tarosec/` to the project `.gitignore`. Store requested reports and generated evidence in that run directory. If initialization fails, report the error and do not claim files were saved.
