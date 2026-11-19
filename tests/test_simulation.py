@@ -66,7 +66,10 @@ class SimulationTests(unittest.TestCase):
 
     def test_catalog_runs_are_deterministic_and_inconclusive(self):
         catalog = call(RUNNER, "list").stdout.splitlines()
-        self.assertEqual(len(catalog), 3)
+        self.assertEqual(set(catalog), {
+            "auth.benign-login-retry", "auth.suspicious-login",
+            "endpoint.ransomware-behavior", "web.attack-patterns",
+        })
         for scenario in catalog:
             with self.subTest(scenario=scenario):
                 first, second = self.root / f"{scenario}-first", self.root / f"{scenario}-second"
@@ -80,6 +83,13 @@ class SimulationTests(unittest.TestCase):
                 self.assertEqual((first / "result.json").read_bytes(), (second / "result.json").read_bytes())
                 self.assertTrue(all(event["synthetic"] for event in json.loads((first / "events.json").read_text())))
                 self.assertIn("2026-01-01T00:00:00+00:00", result["startedAt"])
+
+    def test_benign_login_control_preserves_retry_without_suspicious_markers(self):
+        result = self.success("synthetic", "benign-login-retry")
+        events = json.loads((self.output / "events.json").read_text())
+        self.assertEqual([event["type"] for event in events],
+                         ["auth.failure", "auth.failure", "auth.success"])
+        self.assertEqual(result["outcome"], "inconclusive")
 
     def test_replay_normalizes_json_and_ndjson(self):
         first = self.success("replay", self.source)

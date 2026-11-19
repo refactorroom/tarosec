@@ -1,6 +1,6 @@
 # Tarosec evaluations
 
-Twelve runnable cases cover skill routing, use of evidence, false positives, gaps,
+Runnable cases cover skill routing, use of evidence, false positives, gaps,
 and execution boundaries. [The original pilot](results/2026-11-18-pilot/RESULTS.md)
 and [the Codex follow-up](results/2026-11-18-codex/RESULTS.md) describe actual
 outputs and limitations. The final paired comparison remains **Not Run** due to
@@ -22,8 +22,12 @@ a substitute for the Codex comparison.
 | N1 | None | Conceptual question with no workflow activation |
 | T1 | Entry point | Read-only project routing despite a deployment hostname |
 | T2 | Entry point only | Missing simulation specialist and installation fallback |
+| T3 | Entry point and Audit | Partial workflow when Report is unavailable |
+| W1 | Audit | Answer-only review preserves the target and its ignore rules |
 
 See the [entry point evaluation](results/2026-11-18-entry-point/RESULTS.md) for paired T1, T2 and N1 results.
+The [foundation verification](results/foundation/RESULTS.md) records W1, T3 and
+N1 runs and the associated deterministic regressions.
 
 ## Prepare fresh workspaces
 

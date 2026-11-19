@@ -252,6 +252,8 @@ def compare_findings(baseline, retest, summaries):
     refs = [set(record.get("findingRefs", [])) for record in (baseline, retest)]
     indexed = [{row["id"]: row for row in summary["findings"] if row["id"] in subset}
                for summary, subset in zip(summaries, refs)]
+    digests = [{row["id"]: row["referenceSha256"] for row in summary["evidence"]
+                if row["artifactCheck"] == "match"} for summary in summaries]
     rows = []
     for ref in sorted_refs(refs[0] | refs[1]):
         before, after = (index.get(ref, {}) for index in indexed)
@@ -259,15 +261,16 @@ def compare_findings(baseline, retest, summaries):
                          for row in (before, after))
         assessment = "inconclusive"
         if (before.get("evidenceState") == after.get("evidenceState") == "hash-matched"
+                and before["producer"] == after["producer"]
                 and "inconclusive" not in (first, second)):
-            same_claim = all(before[key] == after[key] for key in ("producer", "claimStrength", "status", "severity"))
-            new_evidence = bool(set(after["evidenceRefs"]) - set(before["evidenceRefs"]))
+            same_claim = all(before[key] == after[key] for key in ("claimStrength", "status", "severity"))
             if first == second and same_claim:
                 assessment = "unchanged"
-            elif first == "confirmed" and second == "fixed" and new_evidence:
-                assessment = "recorded-fix"
-            elif first == "fixed" and second == "confirmed" and new_evidence:
-                assessment = "recorded-regression"
+            elif {first, second} == {"confirmed", "fixed"}:
+                prior_digests = {digests[0][item] for item in before["evidenceRefs"]}
+                new_refs = set(after["evidenceRefs"]) - set(before["evidenceRefs"])
+                if any(digests[1][item] not in prior_digests for item in new_refs):
+                    assessment = "recorded-fix" if second == "fixed" else "recorded-regression"
             else:
                 assessment = "observed-change"
         rows.append({"id": ref, "before": first, "after": second, "assessment": assessment})

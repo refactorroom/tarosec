@@ -45,7 +45,8 @@ Request cues, not CLI subcommands.
 4. **Collect observations.** Per step record execution status and evidence,
    whether a control prevented it, each expected telemetry source's status and
    *source health*, and each expected alert with fire time and host. Use supplied
-   SIEM/EDR exports.
+   SIEM/EDR exports. Record fixture generation, event observation and alert
+   evidence separately so a generated event cannot substantiate an alert claim.
 5. **Classify.** Apply the outcome table. For recorded results in schema form,
    run `python3 scripts/classify_exercise.py EXERCISE.json` and review its reasons;
    the script is deterministic but only as good as the recorded inputs.
@@ -86,4 +87,8 @@ replica when the user requests execution against production.
 
 ## Project workspace
 
-For a project-scoped invocation, reuse the run directory provided by the dispatcher, or run `python3 scripts/init_workspace.py PROJECT --skill tarosec-purple` using the absolute helper path inside this skill. The helper creates a unique directory under the project’s `.tarosec/runs/` and adds `/.tarosec/` to the project `.gitignore`. Store requested reports and generated evidence in that run directory. If initialization fails, report the error and do not claim files were saved.
+For requested file output, reuse the external run directory passed by the
+dispatcher. Otherwise, run the bundled `scripts/init_workspace.py PROJECT --skill tarosec-purple` with Python 3.10+.
+Pass `--output-dir` with an existing external parent for durable storage. The
+helper prints the new run directory. Report the created directory and saved
+files, or the initialization error. Keep answer-only requests in chat.

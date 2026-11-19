@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "tarosec.scenario/v1",
+  "id": "auth.benign-login-retry",
+  "version": "1.0.0",
+  "expected": {
+    "events": [
+      "auth.failure",
+      "auth.success"
+    ],
+    "rules": [
+      "login-sequence"
+    ]
+  }
+}

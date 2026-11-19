@@ -19,7 +19,7 @@ Offer an inert fixture when asked to act against a real service or lab.
 - For help use `python3 scripts/simulate.py --help`. For available scenarios use
   `python3 scripts/simulate.py list`.
 - `simulate suspicious-login` uses synthetic mode and selects
-  `auth.suspicious-login`. Run
+  `auth.suspicious-login` and its `auth.benign-login-retry` control. Run
   `python3 scripts/simulate.py synthetic suspicious-login --output OUT`, using
   the absolute script path from the installed skill and a new child directory such as `RUN/simulation`.
 - For replay, use `python3 scripts/simulate.py replay INPUT --output OUT`.
@@ -33,4 +33,8 @@ completed result record.
 
 ## Project workspace
 
-For a project-scoped invocation, reuse the run directory provided by the dispatcher, or run `python3 scripts/init_workspace.py PROJECT --skill tarosec-simulate` using the absolute helper path inside this skill. The helper creates a unique directory under the project’s `.tarosec/runs/` and adds `/.tarosec/` to the project `.gitignore`. Store requested reports and generated evidence in that run directory. If initialization fails, report the error and do not claim files were saved.
+For requested file output, reuse the external run directory passed by the
+dispatcher. Otherwise, run the bundled `scripts/init_workspace.py PROJECT --skill tarosec-simulate` with Python 3.10+.
+Pass `--output-dir` with an existing external parent for durable storage. The
+helper prints the new run directory. Report the created directory and saved
+files, or the initialization error. Keep answer-only requests in chat.

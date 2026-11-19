@@ -27,3 +27,20 @@ cite existing records, and help the user choose a workflow.
 If Report is missing, give its installation selector and a limited read-only
 summary with evidence IDs and gaps. Reserve claims of a complete validated
 report for the specialist workflow.
+
+## Multi-stage review
+
+For a request with several required deliverables, inventory supplied records,
+confirm scope, then select the needed specialists. Carry the assessment ID,
+scope, selected stage, and existing finding and evidence IDs into each handoff.
+The dispatcher coordinates handoffs through the host when supported. Otherwise,
+give the user the pending stage and its inputs. Specialists work on their own
+stage and return observations, evidence references and gaps.
+
+Track each required stage as pending, complete, blocked, or failed. A stage is
+complete after its requested output exists and its required checks ran. Mark
+the workflow partial when a stage completed but a later one could not. Use
+blocked when a prerequisite prevents any assessment stage from proceeding,
+and name failed checks and missing evidence explicitly. A limited summary
+leaves specialist validation pending. Resume from supplied records after
+checking their scope, IDs and remaining prerequisites.

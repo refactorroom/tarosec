@@ -36,6 +36,9 @@ are, and what evidence would change the answer. Read
 3. **Build the timeline.** Preserve original timestamps; derive a UTC view only
    when offsets are known. Don't invent order for simultaneous events or count
    duplicate copies as corroboration.
+   Cite the identity, asset, session or request ID, and time window that support
+   each join. Flag conflicting or missing keys and distinguish exact matches
+   from time-based associations.
 4. **Test hypotheses.** For each suspicious sequence state the malicious and the
    benign explanation and the evidence that would separate them. Map ATT&CK only
    from observed behavior. No actor attribution by default.
@@ -57,4 +60,8 @@ clearly labelled sections and mark external intelligence with its retrieval date
 
 ## Project workspace
 
-For a project-scoped invocation, reuse the run directory provided by the dispatcher, or run `python3 scripts/init_workspace.py PROJECT --skill tarosec-blue` using the absolute helper path inside this skill. The helper creates a unique directory under the project’s `.tarosec/runs/` and adds `/.tarosec/` to the project `.gitignore`. Store requested reports and generated evidence in that run directory. If initialization fails, report the error and do not claim files were saved.
+For requested file output, reuse the external run directory passed by the
+dispatcher. Otherwise, run the bundled `scripts/init_workspace.py PROJECT --skill tarosec-blue` with Python 3.10+.
+Pass `--output-dir` with an existing external parent for durable storage. The
+helper prints the new run directory. Report the created directory and saved
+files, or the initialization error. Keep answer-only requests in chat.

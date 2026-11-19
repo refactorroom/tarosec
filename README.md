@@ -8,6 +8,11 @@ Tarosec is an offline cybersecurity skill suite for developers, security
 reviewers, and detection engineers using AI coding agents. It helps agents turn
 source code, assessment records, and telemetry into evidence-backed findings.
 
+> **Snyk Developer Security:** Snyk may report medium- or high-severity findings
+> for this suite because it contains cybersecurity tooling, security assessment
+> instructions, and threat-related examples. Review each finding and its context;
+> a severity rating alone does not establish whether a finding is a false positive.
+
 ## Start with `$tarosec`
 
 Install the suite using the local checkout commands below, then enter one of
@@ -134,7 +139,18 @@ use `claude --plugin-dir /path/to/tarosec`. See [installation and troubleshootin
 
 ## Project workspace
 
-When you use a Tarosec skill on a project, the skill initializes `.tarosec/runs/` in that project and adds `/.tarosec/` to its `.gitignore`. Each request gets a separate run directory for its reports and evidence. The dispatcher passes the same directory to the selected specialist. The project’s existing ignore rules and workspace files are preserved.
+Answer-only assessments stay in chat. When file output is requested, use a
+unique run directory outside the assessed project. The dispatcher can pass
+the directory to the selected specialist. The initializer leaves the project
+tree and its ignore rules untouched.
+
+```bash
+python3 -B scripts/init_workspace.py ./project --skill tarosec-audit --output-dir /path/to/existing/reports
+```
+
+The helper prints the directory it created. Omitting `--output-dir` uses the
+system temporary directory, subject to normal cleanup. Existing
+`.tarosec/runs/` files can still be read as supplied historical evidence.
 
 ## Try it offline
 

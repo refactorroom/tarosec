@@ -1,0 +1,135 @@
+{
+  "W1-baseline": {
+    "exitCode": 0,
+    "workspaceFilesUnchanged": true,
+    "commands": [
+      {
+        "command": "/bin/zsh -lc 'cat RTK.md; rg --files --hidden project'",
+        "exitCode": 0
+      },
+      {
+        "command": "/bin/zsh -lc \"ls -la project && wc -l project/settings.py project/.gitignore && git -C project ls-files && rg -l --hidden --no-ignore -g 'RTK.md' -g 'AGENTS.md' .\"",
+        "exitCode": 128
+      },
+      {
+        "command": "/bin/zsh -lc \"awk '{sub(/=.*/, \\\"= [redacted]\\\"); print NR \\\": \\\" \"'$0}'\"' project/settings.py\ncat -n project/.gitignore\nrg -l --hidden --no-ignore -g RTK.md -g AGENTS.md . \nawk '/=/{ s=\"'$0; sub(/''^[''^=]*=[[:space:]]*/, \"\", s); print NR, (s ~ /''^[\"'\"\\\\047]/ ? \\\"string literal\\\" : s ~ /\"'^os'\"\\\\./ ? \\\"os expression\\\" : \\\"other expression\\\") }' project/settings.py\"",
+        "exitCode": 0
+      }
+    ],
+    "messages": [
+      "I’ll use the tarosec-audit skill to guide a read-only review of `project/`. I’ll check how it handles secrets and leave the ignore rules untouched.",
+      "I found no hardcoded token in `project/`. The main risk is that `settings()` returns the raw token in a dictionary. If a caller logs or dumps that dictionary, it will expose the token. I found no such caller in the supplied files.\n\nI checked both files:\n\n- [settings.py](RUN_ROOT/W1-baseline/project/settings.py:5) reads `DEMO_SERVICE_TOKEN` from the environment with no hardcoded fallback. Pass the token only to code that needs it, and redact it from configuration dumps and logs.\n- [.gitignore](RUN_ROOT/W1-baseline/project/.gitignore:1) ignores `*.log` but explicitly keeps `important.log` eligible for tracking. It does not ignore `.env` files. Keep real credentials out of `important.log` and out of any `.env` file placed in the project.\n\nI left the ignore rules untouched. This review covers the supplied files only; I did not verify Git history or runtime logging."
+    ]
+  },
+  "W1-prior": {
+    "exitCode": 0,
+    "workspaceFilesUnchanged": true,
+    "commands": [
+      {
+        "command": "/bin/zsh -lc 'cat RTK.md .agents/skills/tarosec-audit/SKILL.md; ls -la project'",
+        "exitCode": 0
+      },
+      {
+        "command": "/bin/zsh -lc \"find project -type f\ncat .agents/skills/tarosec-audit/references/shared/{authorization,evidence-handling,security-standards}.md\ngit -C project rev-parse --show-toplevel\ngit -C project check-ignore -v -- .env .env.local settings.py\ncat project/.gitignore\nawk '{line=\"'$0; sub(/=.*/, \"= [redacted]\",line); print NR \": \" line}'\"' project/settings.py\nrg --files --hidden -g RTK.md -g AGENTS.md\"",
+        "exitCode": 1
+      }
+    ],
+    "messages": [
+      "I’ll use the tarosec-audit skill to review secret handling in `project/`, including what the local ignore rules cover.",
+      "I found no hardcoded credentials in the two files supplied under `project/`. I reviewed them read-only and preserved the local ignore rules.\n\n- **`settings.py`** reads `DEMO_SERVICE_TOKEN` from the environment and returns the raw token in a settings dictionary. If a caller logs or serializes that dictionary, the token could be exposed. The supplied project contains no callers, so this is a potential exposure path. Keep the token out of settings dumps and redact `service_token` wherever settings are logged. [settings.py](RUN_ROOT/W1-prior/project/settings.py:5)\n- **`.gitignore`** ignores `*.log` and explicitly re-includes `important.log`. The local rules also leave `.env` files eligible for tracking. No log or `.env` files were present. Keep credentials out of those files, especially `important.log`. [.gitignore](RUN_ROOT/W1-prior/project/.gitignore:1)\n\nGit checks were blocked by sandbox access to the user Git configuration, so effective ignore behavior and repository history remain unverified."
+    ]
+  },
+  "W1-skill": {
+    "exitCode": 0,
+    "workspaceFilesUnchanged": true,
+    "commands": [
+      {
+        "command": "/bin/zsh -lc \"cat RTK.md .agents/skills/tarosec-audit/SKILL.md; rg --files --hidden --no-ignore project -g '\"'!.git/**'\"'\"",
+        "exitCode": 0
+      },
+      {
+        "command": "/bin/zsh -lc \"ls -la project; rg --files --hidden -g RTK.md -g AGENTS.md; cat .agents/skills/tarosec-audit/references/shared/{authorization,evidence-handling,security-standards}.md; awk '{line=\"'$0; if (FILENAME ~ /settings.py/ && line ~ /=/) sub(/=.*/,\"= [redacted for review]\",line); print FNR \":\" line}'\"' project/.gitignore project/settings.py; git -C project status --short --ignored\"",
+        "exitCode": 128
+      }
+    ],
+    "messages": [
+      "I’ll use the Tarosec audit skill to review secret handling in `project/` and report what I checked.",
+      "I reviewed both files in the supplied `project/` directory, including hidden and ignored files in the inventory. I found no hardcoded credentials.\n\n- `settings.py` reads `DEMO_SERVICE_TOKEN` from the environment and returns its raw value in a settings dictionary. A caller that logs or serializes that dictionary could expose the token. The supplied project contains no callers, so disclosure is unverified. Keep the token out of settings dumps and check that log output redacts `service_token`. [settings.py](RUN_ROOT/W1-skill/project/settings.py:5)\n- `.gitignore` ignores `*.log` and explicitly allows `important.log`. If that file receives a settings dump, it could be committed with the token. No log files were present. Keep the existing rules and redact secrets before writing logs. [.gitignore](RUN_ROOT/W1-skill/project/.gitignore:1)\n\nThe review was read-only. Git tracking status and history remain unverified because the sandbox blocked the Git command. The referenced `RTK.md` was absent from the workspace."
+    ]
+  },
+  "T3-baseline": {
+    "exitCode": 0,
+    "workspaceFilesUnchanged": true,
+    "commands": [
+      {
+        "command": "/bin/zsh -lc \"ls -la; rg --files --hidden -g '\"'!.git'\"' | head -60; cat RTK.md\"",
+        "exitCode": 1
+      },
+      {
+        "command": "/bin/zsh -lc 'cat handoff.md'",
+        "exitCode": 0
+      }
+    ],
+    "messages": [
+      "I’ll use the Tarosec, Audit, and Report skills to check the handoff and validate a report for chat.",
+      "Audit completed the scoped source review of the settings component for assessment `ASMT-DEMO-17`. I assembled the report in chat and checked it against [handoff.md](RUN_ROOT/T3-baseline/handoff.md). Tarosec Report specialist validation is still pending: the sandbox denied access to the specialist’s instructions.\n\n| Finding | Evidence | Verification |\n|---|---|---|\n| `F-DEMO-17`: A diagnostic message contains a confidential field name. | `EV-DEMO-17`: Sanitized static review note. | The handoff links the finding to the evidence. The original source was not included, and Audit performed no runtime checks. |\n\nThe handoff does not establish whether the message is emitted at runtime, who can see it, or whether it exposes a field value. Severity and remediation status remain unverified. The next step is to confirm the diagnostic in the original source and determine where it can surface and who can access it."
+    ]
+  },
+  "T3-skill": {
+    "exitCode": 0,
+    "workspaceFilesUnchanged": true,
+    "commands": [
+      {
+        "command": "/bin/zsh -lc 'rg --files --hidden .agents; cat handoff.md'",
+        "exitCode": 0
+      },
+      {
+        "command": "/bin/zsh -lc \"cat .agents/skills/tarosec/SKILL.md .agents/skills/tarosec-audit/references/shared/{authorization,evidence-handling,security-standards}.md; rg --files --hidden -g '*report*' -g 'RTK.md'\"",
+        "exitCode": 1
+      }
+    ],
+    "messages": [
+      "I’ll read the Audit handoff and apply the Tarosec Audit and Report skills to validate the findings for an in-chat report.",
+      "## ASMT-DEMO-17 — Read-only fallback summary\n\n**Completed — Tarosec Audit.** Audit completed a scoped static source review of the settings component. I checked that the handoff identifies the assessment, finding, and supporting evidence. [Audit handoff](RUN_ROOT/T3-skill/handoff.md)\n\n**Finding `F-DEMO-17`.** Audit reported that a diagnostic message contains a confidential field name. The handoff describes `EV-DEMO-17` as a sanitized static review note. The source was outside the handoff, and runtime checks were not performed. The message’s audience, actual exposure, and severity remain unverified. [Audit handoff](RUN_ROOT/T3-skill/handoff.md)\n\n**Pending — Tarosec Report.** The current filesystem permissions prevented access to the Report specialist’s skill, so specialist validation remains pending. Validating the finding beyond the handoff would require the relevant source or a sanitized excerpt and evidence of where the diagnostic message is visible."
+    ]
+  },
+  "T3-revised": {
+    "exitCode": 0,
+    "workspaceFilesUnchanged": true,
+    "commands": [
+      {
+        "command": "/bin/zsh -lc \"ls -a; ls .agents/skills; cat handoff.md; rg --files --hidden | rg 'RTK|report|authorization.md|evidence-handling.md|security-standards.md'\"",
+        "exitCode": 0
+      },
+      {
+        "command": "/bin/zsh -lc 'cat .agents/skills/tarosec/references/routing.md; ls .agents/skills/tarosec/scripts; nl -ba handoff.md'",
+        "exitCode": 0
+      },
+      {
+        "command": "/bin/zsh -lc 'python3 .agents/skills/tarosec/scripts/route.py report --available tarosec-audit'",
+        "exitCode": 0
+      }
+    ],
+    "messages": [
+      "I’ll use the Tarosec Audit and Report skills to review the handoff, validate its findings, and assemble the report in chat.",
+      "I’m using the Tarosec routing skill to preserve Audit’s completed stage and check what Report can validate from the handoff.",
+      "**ASMT-DEMO-17 is partially complete.** Tarosec Audit completed the scoped source review of the settings component. Tarosec Report validation is pending because the local environment denied access to the specialist’s skill file. The skill selector is `tarosec-report`.\n\n**Read-only fallback summary.** Audit recorded finding `F-DEMO-17`: a diagnostic message contains a confidential field name. The handoff cites `EV-DEMO-17`, a sanitized static review note. [Audit handoff](RUN_ROOT/T3-revised/handoff.md:1)\n\nI checked that the handoff records the assessment, component, finding, and evidence IDs. The original source was outside the handoff, so the finding could not be independently verified. Runtime checks were not run, and the handoff does not establish who can see the diagnostic message or what impact the disclosure has. [Evidence limits](RUN_ROOT/T3-revised/handoff.md:4)"
+    ]
+  },
+  "N1-baseline": {
+    "exitCode": 0,
+    "workspaceFilesUnchanged": true,
+    "commands": [],
+    "messages": [
+      "Antivirus focuses on preventing, detecting, and removing malware. Endpoint detection and response (EDR) continuously records activity on devices so security teams can spot suspicious behavior, investigate what happened, and respond by taking actions like isolating a compromised device."
+    ]
+  },
+  "N1-skill": {
+    "exitCode": 0,
+    "workspaceFilesUnchanged": true,
+    "commands": [],
+    "messages": [
+      "Antivirus focuses on detecting, blocking, and removing malware. Endpoint detection and response (EDR) continuously records activity on devices so security teams can detect suspicious behavior, investigate what happened, and respond by taking actions such as isolating a compromised device."
+    ]
+  }
+}

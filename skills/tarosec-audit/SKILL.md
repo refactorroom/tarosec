@@ -41,11 +41,18 @@ assess. Read [authorization](references/shared/authorization.md),
 5. **Report coverage honestly.** Inspected, not applicable (with evidence), or
    unverified for each requested area. Failed or unrun scanners are Not Run.
 
+For `verify`, cite the original finding and evidence, the current revision,
+the control now enforcing the invariant, and any supplied regression evidence.
+Keep excluded components, missing inputs, and untested behavior visible. A
+finding absent from a later export remains unresolved without verification.
+
 ## Output
 
 Scope and revision, short threat model, ranked findings (location, attacker
 prerequisite and causal path, impact, evidence, controls considered, fix,
-regression check), checks actually run, coverage limits. Redact secrets by type
+regression check), and checks actually run. For deep or verification work, use
+a coverage table with component, boundary, outcome (inspected, excluded,
+unsupported, incomplete, or not applicable), and evidence or reason. Redact secrets by type
 and location. Optional JSON uses `assets/schemas/finding.schema.json` with
 `producer: tarosec-audit`. Read-only by default: source fixes, scanner installs,
 uploads, commits and pushes need explicit authorization. `tarosec-red` can reuse
@@ -53,4 +60,8 @@ the finding ID when checking supplied assessment evidence.
 
 ## Project workspace
 
-For a project-scoped invocation, reuse the run directory provided by the dispatcher, or run `python3 scripts/init_workspace.py PROJECT --skill tarosec-audit` using the absolute helper path inside this skill. The helper creates a unique directory under the project’s `.tarosec/runs/` and adds `/.tarosec/` to the project `.gitignore`. Store requested reports and generated evidence in that run directory. If initialization fails, report the error and do not claim files were saved.
+For requested file output, reuse the external run directory passed by the
+dispatcher. Otherwise, run the bundled `scripts/init_workspace.py PROJECT --skill tarosec-audit` with Python 3.10+.
+Pass `--output-dir` with an existing external parent for durable storage. The
+helper prints the new run directory. Report the created directory and saved
+files, or the initialization error. Keep answer-only requests in chat.

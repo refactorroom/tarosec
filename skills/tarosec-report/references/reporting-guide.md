@@ -62,5 +62,7 @@ two exercise records in the same snapshot, use that directory once and supply
 both exercise IDs. Tie the retest to the baseline with `retestOf`. Compare
 stable step IDs, target, observations required, environment, and ATT&CK version.
 Report a missing or incomparable row as inconclusive. A recorded fix needs a
-fixed status and supporting retest evidence. A missing finding in a later
-export alone leaves the result inconclusive.
+fixed status from the same producer and a new evidence ID backed by different,
+hash-matched bytes. Treat a producer change, repeated bytes or a missing finding
+as inconclusive for fix verification. Review what the retest actually
+demonstrates before calling a recorded fix verified.

@@ -9,6 +9,11 @@ commit recorded by npm, `e0f05dd`.
 
 The GitHub v0.2.0 release adds a seventh skill and the versioned reporting bundle. npm remains at v0.1.0 because publishing requires one-time authentication. Local release checks and behavioral evaluation status are recorded in the [report evaluation](../evaluations/results/report/RESULTS.md). The v0.1.0 checks below refer to the six-skill release.
 
+The current checkout also has read-only project workspace handling, stricter
+case comparisons, and a benign login fixture. The [foundation verification](../evaluations/results/foundation/RESULTS.md)
+records local results, including the partial dispatcher result and pending
+host checks.
+
 ## Implemented
 
 - Six standalone skills for routing, audit, offline assessment, telemetry

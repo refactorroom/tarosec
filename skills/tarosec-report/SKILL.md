@@ -26,7 +26,8 @@ and what still needs verification. Choose the requested mode or use summary.
 4. Cite finding and evidence IDs next to consequential claims. State gaps and
    scope limits even when the user asks for a clean conclusion. Include only
    audience-relevant, sanitized detail. An answer-only request stays in chat.
-   Save files only to a requested output location.
+   Save files only when requested, using the supplied external run directory
+   or the requested output location outside the inputs.
 
 For validation, use `scripts/validate_report.py` for generated JSON and review
 narrative claims against their evidence separately. Follow

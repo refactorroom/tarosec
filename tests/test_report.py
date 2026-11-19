@@ -177,6 +177,35 @@ class Reporting(unittest.TestCase):
         report = build_report(self.records, "compare", retest, "CASE-QUEUE-01", "CASE-QUEUE-02")
         self.assertEqual(report["comparison"]["rows"][0]["assessment"], "inconclusive")
 
+    def test_finding_retest_requires_same_producer_and_distinct_evidence_bytes(self):
+        finding = read(self.records / "finding.json")
+        evidence = read(self.records / "evidence.json")
+        baseline = {**finding, "verificationStatus": "confirmed", "evidenceRefs": [evidence["id"]]}
+        write(self.records / "finding.json", baseline)
+        retest = self.root / "retest"
+        shutil.copytree(self.records, retest)
+        write(retest / "case.json", {**read(self.records / "case.json"), "id": "CASE-QUEUE-02"})
+        artifact = retest / evidence["artifactPath"]
+        retest_id = "EV-RETEST-01"
+
+        for producer, marker, expected in [
+            ("tarosec-audit", b"independent synthetic retest", "inconclusive"),
+            (baseline["producer"], artifact.read_bytes(), "inconclusive"),
+            (baseline["producer"], b"independent synthetic retest", "recorded-fix"),
+        ]:
+            with self.subTest(producer=producer, expected=expected):
+                retest_marker = retest / "retest-marker.txt"
+                retest_marker.write_bytes(marker)
+                write(retest / "retest-evidence.json", {
+                    **evidence, "id": retest_id, "artifactPath": retest_marker.name,
+                    "sha256": hashlib.sha256(marker).hexdigest(),
+                })
+                write(retest / "finding.json", {**baseline, "producer": producer,
+                      "verificationStatus": "fixed", "evidenceRefs": [retest_id]})
+                report = build_report(self.records, "compare", retest, "CASE-QUEUE-01", "CASE-QUEUE-02")
+                self.assertEqual(validate_report(report), [])
+                self.assertEqual(report["comparison"]["rows"][0]["assessment"], expected)
+
     def test_standalone_bundle_reproducibility_and_overwrite(self):
         installed = self.root / ".agents" / "skills" / "tarosec-report"
         shutil.copytree(SKILL, installed)

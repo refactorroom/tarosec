@@ -6,6 +6,7 @@ evidence and scope as input to an offline assessment.
 
 | Catalog ID | Event count | Captured report |
 | --- | ---: | --- |
+| `auth.benign-login-retry` | 3 | Benign retry control with the same authentication sequence |
 | `auth.suspicious-login` | 5 | [Authentication and session indicators](../examples/simulation/suspicious-login/report.md) |
 | `web.attack-patterns` | 3 | [Web request indicators](../examples/simulation/web-indicators/report.md) |
 | `endpoint.ransomware-behavior` | 5 | [Unusual file activity indicators](../examples/simulation/file-activity/report.md) |
@@ -14,6 +15,13 @@ The catalog emits abstract event types at fixed logical times. Each example
 directory contains its scenario, event evidence, Purple exercise, and result.
 The three runs completed and returned Inconclusive because they had no
 independent defensive observations.
+
+Use the benign retry alongside `auth.suspicious-login` to evaluate rules that
+look for unusual activity after a successful login. Both fixtures contain two
+failures followed by a success. The benign control has no source-change or
+unusual-session marker. A rule intended to detect the combined pattern should
+fire only for the suspicious fixture. The synthetic runner reports both as
+Inconclusive until there is a separate detector result.
 
 ```bash
 python3 -B skills/tarosec-simulate/scripts/simulate.py list

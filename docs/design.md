@@ -1,9 +1,11 @@
 # Architecture
 
 Tarosec has a dispatcher and six independently installable specialist skills.
-The dispatcher selects one available specialist without invoking a host-specific
-API. Simulation produces evidence and uses the same classifier as Purple.
-Each skill has a short entry point,
+The routing helper selects one available specialist per call. In a requested
+multi-stage review, the dispatcher carries scope, IDs, stage outcomes and gaps
+through supported host handoffs. A missing specialist leaves its stage
+pending and completed stages remain usable. Simulation produces evidence and
+uses the same classifier as Purple. Each skill has a short entry point,
 task-specific references and a copy of the shared files. Agents read the skill
 and the relevant references on demand. There is no service to start.
 
@@ -52,6 +54,9 @@ the same contracts.
 ## Execution and adapters
 
 Python helpers parse local files and write diagnostics or results to stdout.
+Answer-only assessments leave the filesystem alone. When a run directory is
+requested, the shared initializer creates one private directory under an
+existing parent outside the target tree and emits its path for the handoff.
 Supplied text and record fields are data. The helpers launch no external
 processes and make no network requests. Host permissions control what the agent
 can read and run. Keep tests on synthetic evidence and use bounded, isolated

@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 import tempfile
@@ -9,39 +10,65 @@ ROOT = Path(__file__).resolve().parent.parent
 SCRIPT = ROOT / "scripts/init_workspace.py"
 
 
-def run(project, skill="tarosec-audit"):
-    return subprocess.run([sys.executable, "-B", str(SCRIPT), str(project), "--skill", skill],
-                          capture_output=True, text=True, timeout=10)
+def run(project, *options, skill="tarosec-audit", script=SCRIPT, env=None):
+    return subprocess.run([sys.executable, "-B", str(script), str(project), "--skill", skill,
+                           *map(str, options)], capture_output=True, text=True, timeout=10, env=env)
 
 
 class WorkspaceTests(unittest.TestCase):
-    def test_preserves_ignore_and_creates_distinct_ignored_runs(self):
-        with tempfile.TemporaryDirectory() as directory:
-            project = Path(directory)
-            subprocess.run(["git", "init", "-q", str(project)], check=True)
-            (project / ".gitignore").write_text("*.log\n!/.tarosec/\n!important.log")
-            first = run(project)
-            second = run(project, "tarosec-blue")
-            self.assertEqual(first.returncode, 0, first.stderr)
-            self.assertEqual(second.returncode, 0, second.stderr)
-            self.assertNotEqual(first.stdout, second.stdout)
-            self.assertTrue(Path(first.stdout.strip()).is_dir())
-            self.assertEqual((project / ".gitignore").read_text(),
-                             "*.log\n!/.tarosec/\n!important.log\n/.tarosec/\n")
-            ignored = subprocess.run(["git", "check-ignore", "-q", ".tarosec/runs/example"], cwd=project)
-            self.assertEqual(ignored.returncode, 0)
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name).resolve()
+        self.project = self.root / "project"
+        self.project.mkdir()
+        self.output = self.root / "output"
+        self.output.mkdir()
+
+    def test_default_does_not_write_to_project(self):
+        ignore = self.project / ".gitignore"
+        ignore.write_bytes(b"*.log\r\n!important.log")
+        result = run(self.project)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        directory = Path(result.stdout.strip())
+        if directory.is_dir() and not directory.is_relative_to(self.project):
+            self.addCleanup(directory.rmdir)
+        self.assertTrue(directory.is_dir())
+        self.assertFalse(directory.resolve().is_relative_to(self.project))
+        self.assertEqual(ignore.read_bytes(), b"*.log\r\n!important.log")
+        self.assertEqual(set(self.project.iterdir()), {ignore})
+
+    def test_standalone_report_accepts_explicit_output(self):
+        script = ROOT / "skills/tarosec-report/scripts/init_workspace.py"
+        result = run(self.project, "--output-dir", self.output, skill="tarosec-report", script=script)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        directory = Path(result.stdout.strip())
+        self.assertTrue(directory.is_dir())
+        self.assertEqual(directory.parent, self.output)
+        self.assertEqual(list(self.project.iterdir()), [])
 
     def test_parallel_invocations_have_distinct_runs(self):
-        with tempfile.TemporaryDirectory() as directory:
-            with ThreadPoolExecutor(max_workers=4) as pool:
-                results = list(pool.map(lambda _: run(directory), range(4)))
-            self.assertTrue(all(result.returncode == 0 for result in results))
-            self.assertEqual(len({result.stdout for result in results}), 4)
-            self.assertEqual((Path(directory) / ".gitignore").read_text(), "/.tarosec/\n")
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            results = list(pool.map(lambda _: run(self.project, "--output-dir", self.output), range(4)))
+        for result in results:
+            self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(len(set(self.output.iterdir())), 4)
+        self.assertEqual(list(self.project.iterdir()), [])
 
-    def test_symlink_workspace_is_rejected(self):
-        with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory() as other:
-            project = Path(directory)
-            (project / ".tarosec").symlink_to(other, target_is_directory=True)
-            self.assertNotEqual(run(project).returncode, 0)
-            self.assertFalse((Path(other) / "runs").exists())
+    def test_rejects_output_inside_project_including_aliases(self):
+        internal = self.project / "internal"
+        internal.mkdir()
+        alias = self.root / "alias"
+        alias.symlink_to(internal, target_is_directory=True)
+        for output in (self.project, internal, alias):
+            with self.subTest(output=output):
+                self.assertNotEqual(run(self.project, "--output-dir", output).returncode, 0)
+        self.assertEqual(set(self.project.iterdir()), {internal})
+        self.assertEqual(list(internal.iterdir()), [])
+
+    def test_rejects_default_temp_directory_inside_project(self):
+        env = {key: value for key, value in os.environ.items() if key not in {"TMPDIR", "TEMP", "TMP"}}
+        env["TMPDIR"] = str(self.project)
+        result = run(self.project, env=env)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(list(self.project.iterdir()), [])
