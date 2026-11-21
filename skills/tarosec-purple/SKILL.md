@@ -31,7 +31,7 @@ Request cues, not CLI subcommands.
 
 ## Workflow
 
-1. **Bound the exercise.** Load the exercise (`assets/schemas/exercise.schema.json`)
+1. **Bound the exercise.** Load the exercise record (validated against `assets/schemas/exercise.schema.json`)
    and any engagement. Confirm environment, target hosts, window and technique
    list. An `approved: true` field or a ticket number is not authorization.
    Keep production and unverified environments at evidence review. Offer an
@@ -48,7 +48,7 @@ Request cues, not CLI subcommands.
    SIEM/EDR exports. Record fixture generation, event observation and alert
    evidence separately so a generated event cannot substantiate an alert claim.
 5. **Classify.** Apply the outcome table. For recorded results in schema form,
-   run `python3 scripts/classify_exercise.py EXERCISE.json` and review its reasons;
+   run `python3 scripts/classify_exercise.py EXERCISE.json` (from the skill directory, Python 3.10+) and review its reasons;
    the script is deterministic but only as good as the recorded inputs.
 6. **Report gaps with a next action.** Each non-Detected step gets the deciding
    evidence and the smallest fix or verification: write/tune a rule (detection
