@@ -16,12 +16,14 @@ data. Use synthetic mode for a catalog ID and replay for explicitly supplied,
 sanitized records. Follow [authorization](references/shared/authorization.md).
 Offer an inert fixture when asked to act against a real service or lab.
 
+- Script paths are relative to the skill directory; run from there or use absolute paths. Requires Python 3.10+.
 - For help use `python3 scripts/simulate.py --help`. For available scenarios use
   `python3 scripts/simulate.py list`.
 - `simulate suspicious-login` uses synthetic mode and selects
   `auth.suspicious-login` and its `auth.benign-login-retry` control. Run
   `python3 scripts/simulate.py synthetic suspicious-login --output OUT`, using
-  the absolute script path from the installed skill and a new child directory such as `RUN/simulation`.
+  the absolute script path from the installed skill and a new child directory such as `RUN/simulation`
+  (its parent must already exist; the output directory itself must not).
 - For replay, use `python3 scripts/simulate.py replay INPUT --output OUT`.
   See the [input and evidence contract](references/simulation.md).
 

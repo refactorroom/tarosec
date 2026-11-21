@@ -12,6 +12,7 @@ Outcomes are documented in the skill's SKILL.md.
 """
 from __future__ import annotations
 
+import io
 import json
 import os
 import sys
@@ -21,6 +22,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from validate_record import load_json, validate  # noqa: E402  (synced sibling)
 
+MAX_INPUT_BYTES = 1024 * 1024
 SCHEMA = os.path.join(HERE, "..", "assets", "schemas", "exercise.schema.json")
 
 
@@ -40,7 +42,7 @@ def classify_step(step: dict) -> tuple[str, list[str]]:
     if not res:
         return "Not run", ["no results recorded"]
     status = res["execution"]["status"]
-    if status in ("not_run", "blocked"):
+    if status == "not_run" or (status == "blocked" and not res["execution"].get("prevented")):
         return "Not run", [f"execution status {status}"]
     if status in ("failed", "unknown"):
         return "Inconclusive", [f"execution {status}: no evidence the behavior occurred"]
@@ -138,8 +140,11 @@ def main(argv: list[str]) -> int:
         print("usage: classify_exercise.py EXERCISE.json [--json]", file=sys.stderr)
         return 2
     try:
-        with open(args[0], encoding="utf-8") as f:
-            exercise = load_json(f)
+        with open(args[0], "rb") as f:
+            raw = f.read(MAX_INPUT_BYTES + 1)
+        if len(raw) > MAX_INPUT_BYTES:
+            raise ValueError(f"exercise file exceeds {MAX_INPUT_BYTES} bytes")
+        exercise = load_json(io.StringIO(raw.decode("utf-8")))
         with open(SCHEMA, encoding="utf-8") as f:
             schema = load_json(f)
         errors = validate(exercise, schema)

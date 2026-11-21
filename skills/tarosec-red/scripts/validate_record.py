@@ -77,7 +77,8 @@ def validate(value: Any, schema: dict, path: str = "$") -> list[str]:
     if isinstance(value, str):
         if len(value) < schema.get("minLength", 0):
             errors.append(f"{path}: shorter than {schema['minLength']}")
-        if "pattern" in schema and not re.search(schema["pattern"], value):
+        if "pattern" in schema and (not re.search(schema["pattern"], value)
+                                    or (schema["pattern"].endswith("$") and value.endswith("\n"))):
             errors.append(f"{path}: does not match {schema['pattern']}")
     if isinstance(value, list):
         if len(value) < schema.get("minItems", 0):

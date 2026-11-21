@@ -19,7 +19,7 @@ for that case. Report when source artifacts are missing. Current intelligence
 requires an authorized source lookup and is outside the offline fallback.
 
 Pass the names of specialists that the host exposes to this session as repeated
-`--available` flags. Run `python3 scripts/route.py help` for the contract.
+`--available` flags. Run `python3 scripts/route.py help` (from the skill directory, Python 3.10+) for the contract.
 An installed specialist owns the work. For a missing specialist, use the
 `installSelector` in the response with the project's Skills CLI source.
 An entry-only install can provide a read-only inventory of supplied artifacts,

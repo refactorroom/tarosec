@@ -198,8 +198,9 @@ def run(args):
         "evidence": [{"id": Path(name).stem, "path": name, "sha256": digest(data)} for name, data in records.items()],
     }
     output = Path(args.output)
-    if ":" in args.output or ".." in output.parts or output.resolve().is_relative_to(source.resolve()):
-        raise ValueError("output must be a new directory outside the input directory")
+    if ":" in args.output or ".." in output.parts or output.resolve().is_relative_to(source.resolve()) \
+            or output.resolve().is_relative_to(ASSETS.resolve()):
+        raise ValueError("output must be a new directory outside the input directory and bundled assets")
     report = (
         f"# Simulation report\n\nScenario **{result['scenario']}** ran in {args.mode} mode.\n\n"
         f"Execution **completed** with {len(events)} events. Detection outcome **{outcome}**.\n\n"
