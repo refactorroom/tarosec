@@ -28,8 +28,8 @@ finding and simulation-result records. Use a single JSON record or a dedicated
 directory of records and artifacts. From the skill directory:
 
 ```bash
-python3 -B scripts/generate_report.py ./cases --type technical --output ./reports
-python3 -B scripts/validate_report.py ./reports/report.json --bundle --input ./cases
+python3 -B scripts/generate_report.py ./cases --type technical --output .tarosec/workspace/RUN/report
+python3 -B scripts/validate_report.py .tarosec/workspace/RUN/report/report.json --bundle --input ./cases
 ```
 
 The helper exports a structured Markdown report, `tarosec.report/v1` JSON, and
@@ -40,8 +40,8 @@ no input format for those claims beyond the canonical fields. Its technical
 and remediation exports provide structured finding and verification facts for
 that review.
 
-Choose a new output directory in an existing parent, outside the supplied
-inputs. `--overwrite` replaces the three files in an existing Tarosec bundle.
+Write the bundle to a new directory inside the run directory under
+`.tarosec/workspace/`, outside the supplied inputs. `--overwrite` replaces the three files in an existing Tarosec bundle.
 Use `--bundle` to check that all three files match. Generation exits 0 when
 the bundle is written, including bundles with gaps. Validation exits 1 for
 an inconsistency and 2 for usage or I/O errors. With `--input`, validation
@@ -52,7 +52,7 @@ Timestamps are opt-in via `--generated-at` and require an explicit offset.
 
 ```bash
 python3 -B scripts/generate_report.py ./baseline --type compare --retest ./retest \
-  --baseline-id CASE-BEFORE --retest-id CASE-AFTER --output ./comparison
+  --baseline-id CASE-BEFORE --retest-id CASE-AFTER --output .tarosec/workspace/RUN/comparison
 python3 -B scripts/validate_report.py ./comparison/report.json \
   --bundle --input ./baseline --retest ./retest
 ```

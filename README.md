@@ -36,6 +36,7 @@ workflow. The existing specialists remain available for direct use.
 | [Tarosec Purple](skills/tarosec-purple/SKILL.md) | Compare recorded exercise steps with expected telemetry and alerts | `plan`, `exercise`, `emulate`, `validate`, `coverage`, `retest` |
 | [Tarosec Simulate](skills/tarosec-simulate/SKILL.md) | Generate controlled event records or replay sanitized evidence | `list`, `synthetic`, `replay` |
 | [Tarosec Report](skills/tarosec-report/SKILL.md) | Consolidate supplied records, check evidence, and prepare reports | `summary`, `technical`, `executive`, `incident`, `coverage`, `remediation`, `compare`, `validate` |
+| [Tarosec Git Issues](skills/tarosec-git-issues/SKILL.md) | Draft publication-safe GitHub issues from validated findings; publish approved creates or updates | draft, create, update |
 
 See the [report walkthrough](examples/reporting/README.md) for standalone use.
 
@@ -147,18 +148,31 @@ use `claude --plugin-dir /path/to/tarosec`. See [installation and troubleshootin
 
 ## Project workspace
 
-Answer-only assessments stay in chat. When file output is requested, use a
-unique run directory outside the assessed project. The dispatcher can pass
-the directory to the selected specialist. The initializer leaves the project
-tree and its ignore rules untouched.
+Answer-only assessments stay in chat. When a skill scans, tests or writes a
+report, it saves everything under `.tarosec/` in the assessed project:
 
-```bash
-python3 -B scripts/init_workspace.py ./project --skill tarosec-audit --output-dir /path/to/existing/reports
+```text
+project/
+├── .gitignore          # gains "/.tarosec/workspace/"
+└── .tarosec/
+    ├── README.md       # explains the folder
+    └── workspace/      # one directory per run, git-ignored
+        ├── tarosec-audit-ab12cd/
+        └── tarosec-report-ef34gh/
 ```
 
-The helper prints the directory it created. Omitting `--output-dir` uses the
-system temporary directory, subject to normal cleanup. Existing
-`.tarosec/runs/` files can still be read as supplied historical evidence.
+The dispatcher creates the run directory and passes it to the selected
+specialist. To create one yourself:
+
+```bash
+python3 -B scripts/init_workspace.py ./project --skill tarosec-audit
+```
+
+The helper prints the new run directory. It creates `.tarosec/README.md` when
+it is missing and adds `/.tarosec/workspace/` to `.gitignore` once. Runs can
+hold sensitive evidence, so review them before sharing. Pass `--output-dir`
+to use another existing location instead. Existing `.tarosec/runs/` files can
+still be read as supplied historical evidence.
 
 ## Try it offline
 

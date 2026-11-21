@@ -60,8 +60,11 @@ clearly labelled sections and mark external intelligence with its retrieval date
 
 ## Project workspace
 
-For requested file output, reuse the external run directory passed by the
-dispatcher. Otherwise, run the bundled `scripts/init_workspace.py PROJECT --skill tarosec-blue` with Python 3.10+.
-Pass `--output-dir` with an existing external parent for durable storage. The
-helper prints the new run directory. Report the created directory and saved
+Save every scan result, finding, evidence file and report under
+`.tarosec/workspace/` in the assessed project. Reuse the run directory passed
+by the dispatcher. Otherwise, run the bundled
+`scripts/init_workspace.py PROJECT --skill tarosec-blue` with Python 3.10+. It creates
+`.tarosec/README.md`, adds `.tarosec/workspace/` to `.gitignore`, and prints
+the new run directory. Use `--output-dir` only when the user names another
+existing location. Never write scan output elsewhere in the project. Report the created directory and saved
 files, or the initialization error. Keep answer-only requests in chat.

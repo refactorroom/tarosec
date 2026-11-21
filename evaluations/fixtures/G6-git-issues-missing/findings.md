@@ -1,0 +1,1 @@
+No validated findings are supplied. A raw scanner summary reports "12 possible problems" with no impact or classification. Repository identity and authentication are unknown. Do not contact external systems in this evaluation.

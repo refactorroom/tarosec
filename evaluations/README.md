@@ -86,3 +86,21 @@ export, missing retest evidence, and non-activation. Prepare each with
 `scripts/prepare_eval.py` as above. For these cases the baseline installs
 only the entry point and its summary fallback, and the skill arm adds Report.
 See the [report evaluation](results/report/RESULTS.md) for outcomes.
+
+
+## GitHub issue comparison (Not Run)
+
+G1–G7 cover offline drafts, conflicting remediation evidence and green CI,
+publication-safe references, embedded approval, concurrent updates and uncertain
+writes, missing validation, and non-activation. Prepare either arm with the same
+`scripts/prepare_eval.py` commands above, substituting `--case G1` through G7.
+Baseline installs no skills; the skill arm installs only Git Issues. Reviewer
+criteria remain in `reviewer/cases.json`, outside the task-performing context.
+
+These are draft/reasoning cases with supplied observations, not live GitHub
+integration tests. Restrict network and external connectors in both arms. Never
+use production issues or real tokens. G4/G5 test responses to supplied state;
+they do not establish actual concurrency or retry behavior. A future authorized
+sandbox run should exercise command ordering and rereads with controlled gh
+responses, followed separately by a disposable GitHub repository if required.
+See [the review record](results/git-issues/RESULTS.md) for current evidence.

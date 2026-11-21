@@ -236,3 +236,6 @@ __marimo__/
 .DS_Store
 .idea/
 .vscode/
+
+# Tarosec run output
+/.tarosec/workspace/

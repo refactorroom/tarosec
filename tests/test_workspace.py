@@ -25,18 +25,39 @@ class WorkspaceTests(unittest.TestCase):
         self.output = self.root / "output"
         self.output.mkdir()
 
-    def test_default_does_not_write_to_project(self):
+    def test_default_creates_tarosec_workspace(self):
         ignore = self.project / ".gitignore"
         ignore.write_bytes(b"*.log\r\n!important.log")
         result = run(self.project)
         self.assertEqual(result.returncode, 0, result.stderr)
         directory = Path(result.stdout.strip())
-        if directory.is_dir() and not directory.is_relative_to(self.project):
-            self.addCleanup(directory.rmdir)
         self.assertTrue(directory.is_dir())
-        self.assertFalse(directory.resolve().is_relative_to(self.project))
-        self.assertEqual(ignore.read_bytes(), b"*.log\r\n!important.log")
-        self.assertEqual(set(self.project.iterdir()), {ignore})
+        self.assertEqual(directory.parent, (self.project / ".tarosec/workspace").resolve())
+        self.assertTrue((self.project / ".tarosec/README.md").is_file())
+        self.assertEqual(ignore.read_bytes(),
+                         b"*.log\r\n!important.log\r\n# Tarosec run output\r\n/.tarosec/workspace/\r\n")
+
+    def test_default_is_idempotent(self):
+        readme = self.project / ".tarosec"
+        for _ in range(2):
+            self.assertEqual(run(self.project).returncode, 0)
+        (readme / "README.md").write_text("custom")
+        self.assertEqual(run(self.project).returncode, 0)
+        self.assertEqual((readme / "README.md").read_text(), "custom")
+        ignore = (self.project / ".gitignore").read_text()
+        self.assertEqual(ignore.count("/.tarosec/workspace/"), 1)
+        self.assertEqual(len(list((readme / "workspace").iterdir())), 3)
+
+    def test_respects_existing_tarosec_ignore(self):
+        (self.project / ".gitignore").write_text(".tarosec/\n")
+        self.assertEqual(run(self.project).returncode, 0)
+        self.assertEqual((self.project / ".gitignore").read_text(), ".tarosec/\n")
+
+    def test_rejects_symlinked_workspace(self):
+        (self.project / ".tarosec").mkdir()
+        (self.project / ".tarosec/workspace").symlink_to(self.output, target_is_directory=True)
+        self.assertNotEqual(run(self.project).returncode, 0)
+        self.assertEqual(list(self.output.iterdir()), [])
 
     def test_standalone_report_accepts_explicit_output(self):
         script = ROOT / "skills/tarosec-report/scripts/init_workspace.py"
@@ -53,22 +74,4 @@ class WorkspaceTests(unittest.TestCase):
         for result in results:
             self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(len(set(self.output.iterdir())), 4)
-        self.assertEqual(list(self.project.iterdir()), [])
-
-    def test_rejects_output_inside_project_including_aliases(self):
-        internal = self.project / "internal"
-        internal.mkdir()
-        alias = self.root / "alias"
-        alias.symlink_to(internal, target_is_directory=True)
-        for output in (self.project, internal, alias):
-            with self.subTest(output=output):
-                self.assertNotEqual(run(self.project, "--output-dir", output).returncode, 0)
-        self.assertEqual(set(self.project.iterdir()), {internal})
-        self.assertEqual(list(internal.iterdir()), [])
-
-    def test_rejects_default_temp_directory_inside_project(self):
-        env = {key: value for key, value in os.environ.items() if key not in {"TMPDIR", "TEMP", "TMP"}}
-        env["TMPDIR"] = str(self.project)
-        result = run(self.project, env=env)
-        self.assertNotEqual(result.returncode, 0)
         self.assertEqual(list(self.project.iterdir()), [])
