@@ -80,6 +80,33 @@ For another Agent Skills-compatible host, copy a whole directory from `skills/`
 into its configured project skills folder. Include its `SKILL.md`, references,
 schemas, scripts and notices. Check the host's documentation for discovery paths.
 
+## Security scanner ratings during install
+
+Before it installs, the Skills CLI shows a **Security Risk Assessments** table
+with ratings from Gen, Socket and Snyk. Expect Snyk to rate some Tarosec skills
+as Medium or higher. This is expected when you install from this repository.
+
+![Skills CLI security risk assessments for Tarosec: Gen Safe and Socket 0 alerts for every skill; Snyk Med Risk for tarosec, tarosec-audit, tarosec-blue and tarosec-red, Low Risk for tarosec-purple and tarosec-simulate, Critical Risk for tarosec-report](assets/skills-security-risk-assessments.png)
+
+Tarosec is a security toolkit. To do its job, its skill instructions describe
+attack techniques, scanning, detection rules, evidence handling and sensitive
+files. Snyk's skill scanner checks for patterns like these and flags them as
+risky, whatever the reason they appear. Gen and Socket rate every skill clean.
+
+To decide for yourself:
+
+- Open the per-skill findings at
+  [skills.sh/refactorroom/tarosec](https://skills.sh/refactorroom/tarosec).
+- Read the `SKILL.md` and bundled scripts of each skill before you install it.
+  The CLI's own note applies: skills run with full agent permissions.
+- Install only the specialists you need with `--skill`. For example, install
+  `tarosec-purple` or `tarosec-simulate` when you need only those.
+- Use Tarosec only on systems you are authorized to test. See
+  [SECURITY.md](../SECURITY.md).
+
+If a rating looks wrong or a finding points to real unsafe behavior, open an
+issue with the skill name and the finding text.
+
 ## Troubleshooting
 
 - If `add --list` finds zero skills, confirm the source revision contains `skills/*/SKILL.md`.

@@ -59,6 +59,14 @@ npx skills add refactorroom/tarosec --list
 npx skills list
 ```
 
+> **Note:** During installation, the Skills CLI shows a security risk table.
+> Snyk rates several Tarosec skills Medium or higher, while Gen and Socket rate
+> every skill clean. Tarosec is a security toolkit, so its skills describe attacks,
+> scans and evidence handling, and the scanner flags that kind of content.
+> See [Security scanner ratings](docs/install.md#security-scanner-ratings-during-install).
+>
+> ![Skills CLI security risk assessments for Tarosec skills](docs/assets/skills-security-risk-assessments.png)
+
 Add `--global` when installing for your user account. After installation, start
 a new agent session and request `$tarosec ./project` or `$tarosec simulate suspicious-login`.
 The [Skills directory](https://skills.sh/docs/faq) discovers public skills from
