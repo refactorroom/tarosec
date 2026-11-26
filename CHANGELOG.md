@@ -11,7 +11,7 @@
 
 ### Upgrading from 0.2.0 or an earlier development build
 
-- Use a trusted local Semgrep rule file by default. If you keep public Registry packs in existing `tarosec.json` settings, pass `--allow-registry` on runs intended to fetch those packs.
+- Use a trusted local Semgrep rule file. Registry fetching was removed before 0.3.0. Replace any Registry pack entries in preview `tarosec.json` settings with licensed local rule files.
 - Pass `--update-gitignore` when you want Tarosec to add a project ignore rule. Ordinary and answer-only reviews continue to avoid writing artifacts.
 
 ## 0.2.0 (2026-11-18)

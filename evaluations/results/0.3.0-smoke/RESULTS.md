@@ -27,3 +27,9 @@ Independent checks confirmed the final three native runs' manifest schemas,
 evidence records and artifact hashes, the review file, the expected scan alert,
 and unchanged demo source and Git ignore state. These are workflow smoke checks.
 The paired baseline-versus-skill evaluation for finding accuracy was not run.
+
+After removing Registry fetching from the candidate, the package dry run still
+included all eight skills and only the Tarosec-authored demo rule. In a synthetic
+private Git checkout with networking denied, a legacy Registry setting left
+the scan stage `not_run`. Supplying the local demo rule completed the scan and
+produced the expected marker alert.

@@ -63,8 +63,7 @@ writes to `.tarosec/reports/`. Both can be read by Report and only edit
 `.gitignore` when `--update-gitignore` is supplied.
 
 Other offline record helpers parse data locally. `scan-report` invokes installed
-Semgrep with local rule files by default. Configured Registry packs require
-`--allow-registry` in the current run. Host permissions control what the agent
+Semgrep with local rule files only. Host permissions control what the agent
 and scanner can read and run. Keep tests on synthetic evidence and use bounded,
 isolated tool permissions when checking safety behavior.
 

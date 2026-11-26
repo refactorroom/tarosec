@@ -35,8 +35,7 @@ when a later stage is unavailable.
 
 For explicit `scan-report` requests, follow the [scan and report workflow](references/scan-report.md).
 This mode writes artifacts under `.tarosec/reports/` and uses local scanner
-rules by default. Pass `--allow-registry` or `--update-gitignore` only when the
-user authorizes the corresponding action.
+rules. Pass `--update-gitignore` only when the user authorizes the edit.
 
 ## Project workspace
 

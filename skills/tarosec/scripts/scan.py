@@ -7,7 +7,6 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import re
 import shutil
 import subprocess
 import sys
@@ -63,16 +62,13 @@ def scan_settings(path):
     return options
 
 
-def semgrep_configs(project, rulesets, override, allow_registry):
+def semgrep_configs(project, rulesets, override):
     configs = []
     for ruleset in [override] if override is not None else rulesets:
-        if isinstance(ruleset, str) and re.fullmatch(r"p/[a-zA-Z0-9_.-]+", ruleset):
-            if not allow_registry:
-                return [], "registry-disabled"
-            configs.append(ruleset)
-            continue
         path = (project / ruleset if isinstance(ruleset, str) else ruleset).resolve()
         if not path.is_file():
+            if isinstance(ruleset, str) and ruleset.startswith("p/"):
+                return [], "registry-disabled"
             return [], "rules-unavailable"
         configs.append(str(path))
     return configs, None
@@ -129,7 +125,6 @@ def main():
     parser.add_argument("project", type=Path)
     parser.add_argument("--bughunter-report", type=Path, help="existing sanitized Markdown or text report")
     parser.add_argument("--config", type=Path, help="trusted local Semgrep rule file")
-    parser.add_argument("--allow-registry", action="store_true", help="allow retrieval of configured public rule packs")
     parser.add_argument("--update-gitignore", action="store_true", help="add /.tarosec/ to the project ignore file")
     args = parser.parse_args()
     try:
@@ -141,11 +136,11 @@ def main():
         if args.update_gitignore:
             ensure_ignored(project, "/.tarosec/")
         settings = scan_settings(workspace / "tarosec.json")
-        configs, reason = semgrep_configs(project, settings["rulesets"], args.config, args.allow_registry)
+        configs, reason = semgrep_configs(project, settings["rulesets"], args.config)
         if args.config:
             settings["rulesets"] = [str(args.config.resolve())]
         settings["exclude"] = list(dict.fromkeys([".tarosec", *settings["exclude"]]))
-        settings.update(resolvedRulesets=configs, registryAllowed=args.allow_registry)
+        settings["resolvedRulesets"] = configs
         reports = safe_directory(workspace / "reports")
         run = Path(tempfile.mkdtemp(prefix="run-", dir=reports))
         stages = {"workspace": {"status": "completed"}, "scan": {"status": "not_run"},
@@ -161,6 +156,8 @@ def main():
         with (run / "semgrep.log").open("wb") as log:
             if reason:
                 log.write(f"Semgrep did not run: {reason}.\n".encode())
+                if reason == "registry-disabled":
+                    log.write(b"Replace Registry pack entries with licensed local rule files or use --config PATH.\n")
             elif not semgrep:
                 reason = "scanner-unavailable"
                 log.write(b"Semgrep executable was not found on PATH.\n")
@@ -175,6 +172,8 @@ def main():
                     command.append(f"--exclude={exclude}")
                 scanner_env = {**os.environ, "SEMGREP_LOG_FILE": str(run / "semgrep-internal.log"),
                                "SEMGREP_SETTINGS_FILE": str(run / "semgrep-user-settings.yml")}
+                scanner_env.pop("SEMGREP_RULES", None)
+                scanner_env.pop("SEMGREP_APP_TOKEN", None)
                 # Sandboxed macOS processes can read the PEM bundle without keychain access.
                 macos_ca_bundle = Path("/etc/ssl/cert.pem")
                 if sys.platform == "darwin" and macos_ca_bundle.is_file():

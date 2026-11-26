@@ -52,12 +52,16 @@ $tarosec scan-report ./project --config ./rules/semgrep.yml --bughunter-report .
 
 The first run creates `.tarosec/tarosec.json` and saves evidence under
 `.tarosec/reports/`. By default, the scanner needs a trusted local rule file at
-`.tarosec/rules/semgrep.yml` or a file passed to `--config`. Use
-`--allow-registry` only for a run that should fetch configured public rule packs.
+`.tarosec/rules/semgrep.yml` or a file passed to `--config`. Use rules you own
+or have permission to use for the intended deployment.
 Add `--update-gitignore` to ignore `/.tarosec/` in Git. Later runs keep your
 settings and record the effective scan settings and stage results.
 [Settings and examples](skills/tarosec/references/scan-report.md)
 · [Offline quickstart with a local demo rule](skills/tarosec/references/scan-report.md#offline-quickstart)
+
+Tarosec is MIT-licensed for use with open-source and proprietary projects.
+The scanner and coding agent are separately supplied. See [source and tool notices](SOURCE_NOTICES.md)
+for rule licensing, redistribution, and private-code handling.
 
 Use the modes as cues in an agent request. The deterministic Python helpers
 require Python 3.10 or later.

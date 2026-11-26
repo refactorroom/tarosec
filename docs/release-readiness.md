@@ -3,7 +3,7 @@
 ## v0.3.0 release candidate
 
 The candidate keeps eight skills. Its headline changes are the offline
-`scan-report` workflow, explicit Registry and Git ignore opt-ins, and shared
+`scan-report` workflow with local rules, opt-in Git ignore changes, and shared
 run manifests. See the [changelog](../CHANGELOG.md) and the [offline quickstart](../skills/tarosec/references/scan-report.md#offline-quickstart).
 
 Verify packaged skills on a synthetic project with a local rules file. A full

@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "skills" / "tarosec" / "scripts"
@@ -63,7 +64,6 @@ class ScanReport(unittest.TestCase):
 
             runs = [
                 ((), [], "registry-disabled"),
-                (("--allow-registry",), ["p/typescript", str(rule_file)], "scanner-unavailable"),
                 (("--config", rule_file), [str(rule_file)], "scanner-unavailable"),
             ]
             for args, expected_rules, reason in runs:
@@ -79,6 +79,14 @@ class ScanReport(unittest.TestCase):
                     self.assertEqual(stages["scan"], {"status": "not_run", "reason": reason})
                     self.assertEqual(stages["report"], {"status": "not_run"})
                     self.assertEqual(settings_path.read_text(), custom)
+
+    def test_registry_fetch_flag_is_unavailable(self):
+        with tempfile.TemporaryDirectory() as directory:
+            project = Path(directory)
+            result = self.scan_without_semgrep(project, "--allow-registry")
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("unrecognized arguments: --allow-registry", result.stderr)
+            self.assertFalse((project / ".tarosec").exists())
 
     def test_default_audit_routing_does_not_write_to_project(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -118,13 +126,16 @@ class ScanReport(unittest.TestCase):
                                "from pathlib import Path\n"
                                "paths = {name: os.environ[name] for name in "
                                "('SEMGREP_LOG_FILE', 'SEMGREP_SETTINGS_FILE')}\n"
+                               "assert 'SEMGREP_RULES' not in os.environ\n"
+                               "assert 'SEMGREP_APP_TOKEN' not in os.environ\n"
                                "json_out = Path(sys.argv[sys.argv.index('--json-output') + 1])\n"
                                "json_out.with_name('child-paths.json').write_text(json.dumps(paths))\n"
                                "json_out.write_text(json.dumps({'results': [], 'errors': [], "
                                "'paths': {'scanned': ['app.py']}}))\n"
                                "Path(sys.argv[sys.argv.index('--sarif-output') + 1]).write_text('{}')\n")
             scanner.chmod(0o700)
-            result = self.scan_without_semgrep(project, "--config", rules)
+            with patch.dict(os.environ, {"SEMGREP_RULES": "p/typescript", "SEMGREP_APP_TOKEN": "synthetic"}):
+                result = self.scan_without_semgrep(project, "--config", rules)
             self.assertEqual(result.returncode, 0, result.stderr)
             run = Path(result.stdout.strip())
             paths = json.loads((run / "child-paths.json").read_text())

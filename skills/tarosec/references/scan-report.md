@@ -10,8 +10,10 @@ Use for a local project the user owns or may assess. Read the shared
    `--bughunter-report PATH`, and optional `--config PATH` for a trusted local
    rule file. The default is the target project's `.tarosec/rules/semgrep.yml`.
    Without a local rule file, the scan stage records `rules-unavailable`.
-   Registry packs in existing settings require `--allow-registry` for that
-   run. Semgrep runs locally with metrics and version checks disabled.
+   Existing Registry pack entries record `registry-disabled` when they do
+   not resolve to a local file. Use rules you own or have rights to use for
+   the intended deployment. Semgrep runs locally with metrics and version
+   checks disabled.
    The helper prints the run directory even when the scan fails. Continue
    the supplied-evidence review and mark the scan incomplete in that case.
 2. Use the run directory printed by the helper. Read `scan-summary.md` and
@@ -87,11 +89,11 @@ The first scan creates `PROJECT/.tarosec/tarosec.json` with these defaults.
 }
 ```
 
-- `rulesets` accepts local rule files and public Semgrep `p/` packs. Relative
+- `rulesets` accepts local rule files. Relative
   paths in the JSON resolve from the target project. `--config` replaces the
   ruleset list for one run and leaves the settings file intact. Use a trusted,
-  versioned local rules file for repeatable scans. Existing Registry settings
-  require `--allow-registry` or a replacement with local files.
+  versioned local rules file for repeatable scans. Replace older Registry
+  entries with local files. See [source and tool notices](../SOURCE_NOTICES.md).
 - `exclude` accepts Semgrep path patterns. Use it for directories such as
   generated output when the exclusion matches the review scope. Tarosec always
   excludes `.tarosec` itself.
