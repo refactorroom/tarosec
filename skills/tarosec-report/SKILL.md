@@ -34,3 +34,9 @@ For validation, use `scripts/validate_report.py` for generated JSON and review
 narrative claims against their evidence separately. Follow
 [authorization](references/shared/authorization.md) and
 [evidence handling](references/shared/evidence-handling.md).
+
+For a `scan-report` handoff, assemble `review.md` in the supplied run directory
+under `.tarosec/reports/`. Include scanner coverage and diagnostics, supported
+source findings, and unresolved claims from the existing external report.
+Cite the underlying file and evidence for each finding. Preserve a failed or
+missing scan as a coverage gap even when the review supports other findings.

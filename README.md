@@ -40,6 +40,22 @@ workflow. The existing specialists remain available for direct use.
 
 See the [report walkthrough](examples/reporting/README.md) for standalone use.
 
+### Scan and report
+
+With Semgrep installed, enter one of these requests in your coding agent.
+
+```text
+$tarosec scan-report ./project
+$tarosec scan-report ./project --bughunter-report ./sanitized-report.md
+$tarosec scan-report ./project --config ./rules/semgrep.yml --bughunter-report ./sanitized-report.md
+```
+
+The first run creates `.tarosec/tarosec.json` and adds `/.tarosec/` to the
+target project's `.gitignore`, creating that file if needed. Edit the settings
+to choose rulesets, exclusions, workers, and the whole-scan timeout. Later runs
+keep your edits and save their effective settings with the review under
+`.tarosec/reports/`. [Settings and examples](skills/tarosec/references/scan-report.md)
+
 Use the modes as cues in an agent request. The deterministic Python helpers
 require Python 3.10 or later.
 

@@ -13,7 +13,9 @@ ROUTES = {
 
 def route(mode, evidence, available):
     if mode == "help":
-        return {"action": "help", "modes": sorted([*ROUTES, "help"])}
+        return {"action": "help", "modes": sorted([*ROUTES, "help", "scan-report"])}
+    if mode == "scan-report":
+        return {"action": "workflow", "mode": mode}
     mode = mode or {"logs": "blue", "exercise": "purple"}.get(evidence, "audit")
     skill = "tarosec-purple" if mode == "verify" and evidence == "exercise" else ROUTES.get(mode)
     if skill is None:

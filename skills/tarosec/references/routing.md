@@ -3,6 +3,7 @@
 | Mode or intent | Skill and use |
 | --- | --- |
 | Project path, scan, audit, source or configuration review | Audit, read-only |
+| Explicit `scan-report` | Dispatcher workflow for local Semgrep, Audit, and Report |
 | Red, attack surface review | Red, supplied records only |
 | Blue, logs, hunting, or incident | Blue for offline triage |
 | Purple or detection validation | Purple for recorded observations |

@@ -48,6 +48,13 @@ finding absent from a later export remains unresolved without verification.
 
 ## Output
 
+When reviewing evidence from `scan-report`, check whether the scanner ran and
+which paths and revision it covered. Treat scanner alerts and supplied external
+claims as candidates. Check the effective safeguards in current source and
+preserve parser warnings, revision mismatches, and unreviewed paths. Associate
+duplicate observations only after checking their root cause. Use the supplied
+run directory for this workflow.
+
 Scope and revision, short threat model, ranked findings (location, attacker
 prerequisite and causal path, impact, evidence, controls considered, fix,
 regression check), and checks actually run. For deep or verification work, use

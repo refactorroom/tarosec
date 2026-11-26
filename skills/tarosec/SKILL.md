@@ -33,9 +33,14 @@ without calling this dispatcher again. For an explicitly requested multi-stage
 review, use the stage outcomes in the routing guide and preserve completed work
 when a later stage is unavailable.
 
+For explicit `scan-report` requests, follow the [scan and report workflow](references/scan-report.md).
+This mode runs local static analysis and may fetch public scanner rules. It
+stores its reports under `.tarosec/reports/` and uses the existing Audit and
+Report skills when available.
+
 ## Project workspace
 
-Save every scan result, finding, evidence file and report under
+For other assessment modes, save every scan result, finding, evidence file and report under
 `.tarosec/workspace/` in the assessed project. Reuse the run directory passed
 by the dispatcher. Otherwise, run the bundled
 `scripts/init_workspace.py PROJECT --skill tarosec` with Python 3.10+. It creates
