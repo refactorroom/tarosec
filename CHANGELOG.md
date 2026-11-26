@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0 (unreleased)
+## 0.3.0 (2026-11-26)
 
 - Added `scan-report` to the existing dispatcher. It combines local Semgrep evidence, source review, and an optional sanitized external assessment. Each run saves its effective settings under `.tarosec/reports/`.
 - Added an offline quickstart with a local demo rule. Production reviews require rules appropriate to the project.
