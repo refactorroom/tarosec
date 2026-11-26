@@ -50,11 +50,14 @@ $tarosec scan-report ./project --bughunter-report ./sanitized-report.md
 $tarosec scan-report ./project --config ./rules/semgrep.yml --bughunter-report ./sanitized-report.md
 ```
 
-The first run creates `.tarosec/tarosec.json` and adds `/.tarosec/` to the
-target project's `.gitignore`, creating that file if needed. Edit the settings
-to choose rulesets, exclusions, workers, and the whole-scan timeout. Later runs
-keep your edits and save their effective settings with the review under
-`.tarosec/reports/`. [Settings and examples](skills/tarosec/references/scan-report.md)
+The first run creates `.tarosec/tarosec.json` and saves evidence under
+`.tarosec/reports/`. By default, the scanner needs a trusted local rule file at
+`.tarosec/rules/semgrep.yml` or a file passed to `--config`. Use
+`--allow-registry` only for a run that should fetch configured public rule packs.
+Add `--update-gitignore` to ignore `/.tarosec/` in Git. Later runs keep your
+settings and record the effective scan settings and stage results.
+[Settings and examples](skills/tarosec/references/scan-report.md)
+· [Offline quickstart with a local demo rule](skills/tarosec/references/scan-report.md#offline-quickstart)
 
 Use the modes as cues in an agent request. The deterministic Python helpers
 require Python 3.10 or later.
@@ -164,15 +167,15 @@ use `claude --plugin-dir /path/to/tarosec`. See [installation and troubleshootin
 
 ## Project workspace
 
-Answer-only assessments stay in chat. When a skill scans, tests or writes a
-report, it saves everything under `.tarosec/` in the assessed project:
+Ordinary source reviews and answer-only assessments read inputs and respond in
+chat. When you request saved output, Tarosec uses `.tarosec/` in the assessed
+project by default.
 
 ```text
 project/
-├── .gitignore          # gains "/.tarosec/workspace/"
 └── .tarosec/
     ├── README.md       # explains the folder
-    └── workspace/      # one directory per run, git-ignored
+    └── workspace/      # one directory per run
         ├── tarosec-audit-ab12cd/
         └── tarosec-report-ef34gh/
 ```
@@ -184,11 +187,11 @@ specialist. To create one yourself:
 python3 -B scripts/init_workspace.py ./project --skill tarosec-audit
 ```
 
-The helper prints the new run directory. It creates `.tarosec/README.md` when
-it is missing and adds `/.tarosec/workspace/` to `.gitignore` once. Runs can
-hold sensitive evidence, so review them before sharing. Pass `--output-dir`
-to use another existing location instead. Existing `.tarosec/runs/` files can
-still be read as supplied historical evidence.
+The helper prints the new run directory and writes a `run.json` manifest.
+Use `--update-gitignore` to add `/.tarosec/workspace/` to `.gitignore`.
+Use `--output-dir` to keep artifacts in another existing location. Runs can
+hold sensitive evidence, so review them before sharing. Existing
+`.tarosec/runs/` files can still be read as supplied historical evidence.
 
 ## Try it offline
 

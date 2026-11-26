@@ -31,6 +31,13 @@ def finding_row(snapshot, ref, record):
         row["verificationStatus"] = record["verificationStatus"]
     if state != "hash-matched":
         snapshot.gaps.append({"code": "finding-evidence-unverified", "kind": "finding", "id": ref})
+    if record["producer"] == "tarosec-audit" and record.get("verificationStatus") == "inconclusive":
+        row["assessmentConfidence"] = "Unknown"
+    if (record["producer"] == "tarosec-audit"
+            and (record["status"] == "Verified vulnerability" or record.get("verificationStatus") == "confirmed")
+            and not record.get("guardChecked")):
+        row["assessmentConfidence"] = "Unknown"
+        snapshot.gaps.append({"code": "finding-guard-unrecorded", "kind": "finding", "id": ref})
     return row
 
 
@@ -152,6 +159,7 @@ def case_row(snapshot, ref, record):
 
 def summarize(snapshot, label, mode, baseline=None):
     findings, evidence, exercises, cases, scope = [], [], [], [], []
+    runs = []
     simulations = simulation_rows(snapshot)
     snapshot.check_references(baseline=baseline)
     for (kind, ref), record in snapshot.records.items():
@@ -165,6 +173,8 @@ def summarize(snapshot, label, mode, baseline=None):
             evidence.append(evidence_row(snapshot, ref, record))
         elif kind == "case":
             cases.append(case_row(snapshot, ref, record))
+        elif kind == "run":
+            runs.append({key: record[key] for key in ("id", "workflow", "stages")})
         elif kind == "engagement":
             scope.append({"id": ref, "environment": record["environment"],
                           "assetCount": len(record["scope"]["targets"]),
@@ -176,9 +186,12 @@ def summarize(snapshot, label, mode, baseline=None):
     metrics = summarize_metrics(findings, exercises)
     if mode == "coverage" and not metrics["eligibleStepCount"]:
         snapshot.gaps.append({"code": "coverage-denominator-unavailable"})
-    return {"label": label, "sources": snapshot.sources, "gaps": unique_rows(snapshot.gaps),
-            "findings": findings, "evidence": evidence, "cases": cases, "scope": scope,
-            "exercises": exercises, "simulations": simulations, "metrics": metrics}
+    summary = {"label": label, "sources": snapshot.sources, "gaps": unique_rows(snapshot.gaps),
+               "findings": findings, "evidence": evidence, "cases": cases, "scope": scope,
+               "exercises": exercises, "simulations": simulations, "metrics": metrics}
+    if runs:
+        summary["runs"] = runs
+    return summary
 
 
 def summarize_metrics(findings, exercises):

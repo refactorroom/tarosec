@@ -45,3 +45,9 @@ blocked when a prerequisite prevents any assessment stage from proceeding,
 and name failed checks and missing evidence explicitly. A limited summary
 leaves specialist validation pending. Resume from supplied records after
 checking their scope, IDs and remaining prerequisites.
+
+For file-producing runs, `run.json` records `completed`, `partial`, `not_run`,
+or `failed` for stages in that workflow. For `scan-report`, preserve the
+scanner's recorded state and update `audit` and `report` after each handoff.
+A missing specialist leaves its stage `not_run` with `specialist-unavailable`,
+even when the dispatcher provides a fallback summary.

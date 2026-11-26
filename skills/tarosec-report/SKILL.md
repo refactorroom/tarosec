@@ -4,7 +4,7 @@ description: Generate, consolidate, validate, and compare evidence-backed cybers
 license: MIT
 metadata:
   suite: tarosec
-  version: "0.1.0"
+  version: "0.3.0"
 ---
 
 # Tarosec Report
@@ -40,3 +40,10 @@ under `.tarosec/reports/`. Include scanner coverage and diagnostics, supported
 source findings, and unresolved claims from the existing external report.
 Cite the underlying file and evidence for each finding. Preserve a failed or
 missing scan as a coverage gap even when the review supports other findings.
+Use the `run.json` stage states when present. Treat a fallback as unvalidated
+until Report completes its checks. Legacy inputs without a manifest remain usable.
+When writing a structured report and updating the same run's manifest, regenerate
+and validate the final bundle against the final manifest so the source digest matches.
+For source findings, ensure a verified vulnerability has a recorded safeguard
+review and supporting evidence. Separate the author's recorded conclusion from
+the confidence the supplied evidence supports.

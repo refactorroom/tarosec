@@ -1,4 +1,21 @@
-# Tarosec v0.1.0 release readiness
+# Tarosec release readiness
+
+## v0.3.0 release candidate
+
+The candidate keeps eight skills. Its headline changes are the offline
+`scan-report` workflow, explicit Registry and Git ignore opt-ins, and shared
+run manifests. See the [changelog](../CHANGELOG.md) and the [offline quickstart](../skills/tarosec/references/scan-report.md#offline-quickstart).
+
+Verify packaged skills on a synthetic project with a local rules file. A full
+smoke run should produce `review.md` and `run.json` with Scan, Audit, and Report
+completed. Run again with the project-local Report skill omitted. The fallback
+should keep the scan and audit results and record Report as `not_run` with
+`specialist-unavailable`. The synthetic marker remains informational in both
+runs. These checks establish workflow behavior on the fixture.
+
+[Release smoke results](../evaluations/results/0.3.0-smoke/RESULTS.md)
+
+## v0.1.0 publication record
 
 **Status on 2026-11-18.** Version `0.1.0` is published on npm and the GitHub
 repository serves all six skills. The `v0.1.0` Git tag identifies the source

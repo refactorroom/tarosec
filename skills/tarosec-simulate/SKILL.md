@@ -5,7 +5,7 @@ license: MIT
 compatibility: Python 3.10+ on a host that supports directory-relative opens and rejects symlink traversal at the final component.
 metadata:
   suite: tarosec
-  version: "0.1.0"
+  version: "0.3.0"
 ---
 
 # Tarosec Simulate
@@ -39,7 +39,7 @@ Save every scan result, finding, evidence file and report under
 `.tarosec/workspace/` in the assessed project. Reuse the run directory passed
 by the dispatcher. Otherwise, run the bundled
 `scripts/init_workspace.py PROJECT --skill tarosec-simulate` with Python 3.10+. It creates
-`.tarosec/README.md`, adds `.tarosec/workspace/` to `.gitignore`, and prints
-the new run directory. Use `--output-dir` only when the user names another
+`.tarosec/README.md` and prints the new run directory. Pass
+`--update-gitignore` only when the user requests a Git ignore entry. Use `--output-dir` only when the user names another
 existing location. Never write scan output elsewhere in the project. Report the created directory and saved
 files, or the initialization error. Keep answer-only requests in chat.

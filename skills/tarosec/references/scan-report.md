@@ -8,8 +8,10 @@ Use for a local project the user owns or may assess. Read the shared
    Claude-BugHunter Markdown or text report. Run `scripts/scan.py` with Python
    3.10+ and an installed Semgrep CLI. Pass the project path, optional
    `--bughunter-report PATH`, and optional `--config PATH` for a trusted local
-   rule file. The default is Semgrep's public `p/security-audit` policy. The
-   scanner runs locally with metrics disabled. It may fetch public rules.
+   rule file. The default is the target project's `.tarosec/rules/semgrep.yml`.
+   Without a local rule file, the scan stage records `rules-unavailable`.
+   Registry packs in existing settings require `--allow-registry` for that
+   run. Semgrep runs locally with metrics and version checks disabled.
    The helper prints the run directory even when the scan fails. Continue
    the supplied-evidence review and mark the scan incomplete in that case.
 2. Use the run directory printed by the helper. Read `scan-summary.md` and
@@ -26,9 +28,12 @@ Use for a local project the user owns or may assess. Read the shared
    scope, scan coverage, supported findings and remediation, and unresolved claims.
    Link findings to file locations and the applicable evidence. Summarize material
    limitations and return the review path. Keep assessment artifacts in the run
-   directory. The helper saves under `.tarosec/reports/` and ignores `/.tarosec/`
-   in the project's `.gitignore`. If a specialist was unavailable, identify
-   the missing review in the report.
+   directory. Record Audit and Report stage results in `run.json` after each
+   handoff. Use `completed` after the specialist delivers and checks its
+   output, `partial` for incomplete work, `failed` when its completion checks
+   fail, or `not_run` with `specialist-unavailable` when it could not be loaded.
+   A fallback summary leaves the Report stage `not_run`. The helper changes
+   `.gitignore` only with `--update-gitignore`.
 
 ## Examples
 
@@ -46,6 +51,26 @@ workflow. For a terminal-only evidence scan, run
 `python3 -B skills/tarosec/scripts/scan.py ./project` from the Tarosec checkout.
 The agent workflow adds the source review and writes `review.md`.
 
+## Offline quickstart
+
+From a Tarosec source checkout, with Python 3.10+ and Semgrep already on `PATH`,
+copy the bundled [demo input](../assets/scan-report-demo/app.py) and
+[demo rule](../assets/scan-report-demo/rules.yml) to a temporary project and run
+the same helper the skill uses.
+
+```bash
+tarosec_demo_dir=$(mktemp -d)
+mkdir -p "$tarosec_demo_dir/.tarosec/rules"
+cp skills/tarosec/assets/scan-report-demo/app.py "$tarosec_demo_dir/app.py"
+cp skills/tarosec/assets/scan-report-demo/rules.yml "$tarosec_demo_dir/.tarosec/rules/semgrep.yml"
+tarosec_run_dir=$(python3 -B skills/tarosec/scripts/scan.py "$tarosec_demo_dir")
+cat "$tarosec_run_dir/scan-summary.md"
+```
+
+Expect one candidate alert for a harmless marker and a `completed` scan in
+`run.json`. The demo rule verifies the workflow. For a repository assessment,
+provide a trusted local ruleset through `--config` or project settings.
+
 ## Project settings
 
 The first scan creates `PROJECT/.tarosec/tarosec.json` with these defaults.
@@ -54,7 +79,7 @@ The first scan creates `PROJECT/.tarosec/tarosec.json` with these defaults.
 {
   "version": 1,
   "semgrep": {
-    "rulesets": ["p/security-audit"],
+    "rulesets": [".tarosec/rules/semgrep.yml"],
     "exclude": [],
     "jobs": 2,
     "timeoutSeconds": 300
@@ -62,11 +87,11 @@ The first scan creates `PROJECT/.tarosec/tarosec.json` with these defaults.
 }
 ```
 
-- `rulesets` accepts public Semgrep `p/` packs and local rule files. Relative
-  paths in the JSON resolve from the target project. For a TypeScript project,
-  for example, try `["p/security-audit", "p/typescript"]` and compare the
-  added findings and diagnostics. `--config` replaces the ruleset list for
-  that run and leaves the settings file intact.
+- `rulesets` accepts local rule files and public Semgrep `p/` packs. Relative
+  paths in the JSON resolve from the target project. `--config` replaces the
+  ruleset list for one run and leaves the settings file intact. Use a trusted,
+  versioned local rules file for repeatable scans. Existing Registry settings
+  require `--allow-registry` or a replacement with local files.
 - `exclude` accepts Semgrep path patterns. Use it for directories such as
   generated output when the exclusion matches the review scope. Tarosec always
   excludes `.tarosec` itself.
@@ -75,3 +100,5 @@ The first scan creates `PROJECT/.tarosec/tarosec.json` with these defaults.
 
 Each run saves `scan-settings.json` with the rules and exclusions it used.
 Use that file alongside `scan-summary.md` when comparing coverage across runs.
+`run.json` uses the same manifest schema as `.tarosec/workspace/` runs. Report
+can ingest either directory and read older runs without a manifest.

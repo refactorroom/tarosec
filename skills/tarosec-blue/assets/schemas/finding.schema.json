@@ -25,6 +25,8 @@
     "observed": {"type": "string", "minLength": 1},
     "impact": {"type": "string", "minLength": 1},
     "preconditions": {"type": "string"},
+    "guardChecked": {"type": "string", "pattern": "\\S"},
+    "limitations": {"type": "string", "pattern": "\\S"},
     "evidenceRefs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
     "remediation": {"type": "string", "minLength": 1},
     "regressionCheck": {"type": "string", "minLength": 1},

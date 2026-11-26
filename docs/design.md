@@ -1,7 +1,8 @@
 # Architecture
 
-Tarosec has a dispatcher and six independently installable specialist skills.
-The routing helper selects one available specialist per call. In a requested
+Tarosec has a dispatcher and independently installable specialist skills. The
+installation command's `--list` output provides the inventory for a checkout.
+The routing helper normally selects one available specialist per call. In a requested
 multi-stage review, the dispatcher carries scope, IDs, stage outcomes and gaps
 through supported host handoffs. A missing specialist leaves its stage
 pending and completed stages remain usable. Simulation produces evidence and
@@ -17,9 +18,9 @@ and the relevant references on demand. There is no service to start.
 | Red | A scope or exposure question about supplied asset lists, engagement records or scan reports | Offline inventory, scope decisions and assessment evidence |
 | Blue | A question about supplied logs, alerts, indicators or detection rules | Timeline, classification, alternate explanations and gaps |
 | Purple | A question about whether a recorded or synthetic exercise produced expected observations | Per-step outcomes, deciding evidence and retest status |
-
 | Simulate | Prerecorded or synthetic data | Local fixture and simulation result |
 | Report | Supplied findings, evidence, cases, exercises and simulation results | Reconciled evidence, gaps and structured reporting |
+| Git Issues | Reviewed findings and an intended publication destination | Sanitized issue draft or an explicitly authorized GitHub write |
 
 General security explanations need no Tarosec workflow. Audit can pass a finding
 ID to Red for corroboration. Blue can supply telemetry provenance or a rule
@@ -38,6 +39,7 @@ Canonical JSON Schemas are in [schemas](../schemas). The record's
 | Evidence | Artifact provenance, collection time, original timezone, optional hash and custody |
 | Case | References to assets, findings, evidence, exercises and activities |
 | Exercise | Expected observations per step, recorded observations, evidence and optional retest linkage |
+| Run | Run ID, workflow and recorded stage outcomes shared by workspace and scan-report |
 
 Report uses `tarosec.report/v1` to reference source IDs and digests, with a companion evidence manifest. It reuses the Purple classifier for recorded steps and keeps simulation outcomes outside the detection rate.
 
@@ -54,17 +56,21 @@ the same contracts.
 ## Execution and adapters
 
 Python helpers parse local files and write diagnostics or results to stdout.
-Answer-only assessments leave the filesystem alone. When a run directory is
-requested, the shared initializer creates one private directory under an
-existing parent outside the target tree and emits its path for the handoff.
-Supplied text and record fields are data. The helpers launch no external
-processes and make no network requests. Host permissions control what the agent
-can read and run. Keep tests on synthetic evidence and use bounded, isolated
-tool permissions when checking safety behavior.
+Default assessments and answer-only requests leave the filesystem alone. When
+a run is requested, the initializer creates a private directory under
+`.tarosec/workspace/` or a supplied parent. The explicit `scan-report` workflow
+writes to `.tarosec/reports/`. Both can be read by Report and only edit
+`.gitignore` when `--update-gitignore` is supplied.
+
+Other offline record helpers parse data locally. `scan-report` invokes installed
+Semgrep with local rule files by default. Configured Registry packs require
+`--allow-registry` in the current run. Host permissions control what the agent
+and scanner can read and run. Keep tests on synthetic evidence and use bounded,
+isolated tool permissions when checking safety behavior.
 
 | Potential input or integration | v0.1 decision |
 | --- | --- |
-| Semgrep, Gitleaks, Trivy, OSV-Scanner | Review supplied report, tool version, exit status and scan coverage. Record supported findings and gaps. |
+| Semgrep, Gitleaks, Trivy, OSV-Scanner | Review supplied report, tool version, exit status and scan coverage. The explicit `scan-report` workflow can also run Semgrep locally. |
 | Network scanner reports | Review supplied scope and exported inventory or scan metadata offline. |
 | Zeek, Suricata, Sigma and SIEM exports | Read supplied evidence and document schema, coverage and time windows. Use recorded controls for detection verification. |
 | Benign simulation | Read prerecorded marker and alert data. No emulation platform is required. |

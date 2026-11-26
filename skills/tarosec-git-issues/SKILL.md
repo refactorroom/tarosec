@@ -5,7 +5,7 @@ license: MIT
 compatibility: Drafts work offline. Git evidence needs git and a local checkout; publication needs authenticated gh and network access to the intended GitHub host.
 metadata:
   suite: tarosec
-  version: "0.2.0"
+  version: "0.3.0"
 ---
 
 # Tarosec Git Issues
@@ -31,6 +31,11 @@ repository identity or existing issue text need not block a standalone draft:
 label unknowns privately and use conservative public status. Ask only for what
 is needed to complete the requested operation. Do not publish with unresolved
 identity, evidence contradictions or safety failures.
+
+For structured Audit findings, check evidence references and `guardChecked`
+before drafting a confirmed claim. If verification is incomplete, retain the
+claim as pending review in private notes. Keep raw guard traces and evidence
+out of the publication-safe draft.
 
 ## Six hard rules
 
@@ -106,5 +111,5 @@ identity, evidence contradictions or safety failures.
 Keep drafts in chat unless saving is requested or a body file is needed. For
 saved work, use a supplied run directory or the bundled
 `scripts/init_workspace.py PROJECT --skill tarosec-git-issues` (Python 3.10+).
-It creates an ignored run directory under `.tarosec/workspace/`; report its
+It creates a run directory under `.tarosec/workspace/`. Report its
 location privately, never in the issue. No global installation is needed.

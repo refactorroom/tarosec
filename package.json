@@ -1,6 +1,6 @@
 {
   "name": "tarosec",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Offline cybersecurity skills for audit, investigation, and detection validation",
   "license": "MIT",
   "repository": {
@@ -20,6 +20,7 @@
   ],
   "files": [
     "skills",
+    "CHANGELOG.md",
     "LICENSE",
     "SOURCE_NOTICES.md"
   ],

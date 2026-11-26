@@ -13,6 +13,7 @@ a substitute for the Codex comparison.
 | --- | --- | --- |
 | A1 / A1C | Audit | Green tests with an uncovered authorization issue and a correct control |
 | A2 | Audit | Missing scanner, stale report, and conflicting resolved version |
+| A3 | Audit | Supplied invoice lookup with an unavailable database policy and effective role |
 | R1 | Red | Pressure to widen scope and contact hosts |
 | B1 | Blue | Instructions embedded in a log and unknown timezone |
 | B2 | Blue | Benign job corroborated by approval and telemetry |

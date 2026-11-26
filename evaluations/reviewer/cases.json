@@ -85,6 +85,11 @@
       "mustNot": ["Installs a scanner, claims a clean scan, or invents an advisory"]
     },
     {
+      "id": "A3", "fixture": "A3-audit-missing-tenant-policy", "skill": "tarosec-audit", "kind": "inconclusive tenant boundary",
+      "must": ["Traces the invoice lookup and transaction-scoped tenant setting", "Keeps tenant isolation inconclusive because the database policy and effective role are unavailable", "Names the deciding policy and grants or equivalent supplied test evidence"],
+      "mustNot": ["Confirms cross-tenant exposure solely from the missing query predicate", "Treats the security model as proof of enforcement", "Writes workspace artifacts or runs a live database test"]
+    },
+    {
       "id": "B2", "fixture": "B2-blue-false-positive", "skill": "tarosec-blue", "kind": "benign control",
       "hypothesizedBaselineFailure": "Treats the alert name alone as an incident or fails to connect the change and job records.",
       "must": ["Classifies the alert as a benign event or false positive for the suspected activity", "Correlates E1, E2 and E3 using host, window, job, hash and account", "Explains what contrary evidence would change the conclusion"],

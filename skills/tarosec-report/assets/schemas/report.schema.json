@@ -32,7 +32,7 @@
               "additionalProperties": false,
               "required": ["kind", "id", "inputIndex", "contentSha256"],
               "properties": {
-                "kind": {"enum": ["case", "engagement", "evidence", "exercise", "finding", "simulation-result"]},
+                "kind": {"enum": ["case", "engagement", "evidence", "exercise", "finding", "run", "simulation-result"]},
                 "id": {
                   "type": "string",
                   "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
@@ -52,18 +52,60 @@
               "additionalProperties": false,
               "required": ["code"],
               "properties": {
-                "code": {"enum": ["symbolic-link-skipped", "input-entry-limit", "unreadable-or-malformed-json", "unsupported-record", "invalid-record", "unsafe-identifier", "conflicting-id", "duplicate-id", "no-usable-records", "unresolved-reference", "evidence-integrity-unresolved", "timestamp-or-timezone-unknown", "finding-evidence-unverified", "unsafe-step-id", "duplicate-step-id", "exercise-timing-unresolved", "exercise-evidence-unverified", "outcome-disagreement", "coverage-denominator-unavailable", "simulation-outcome-unresolved", "scope-unsupplied", "case-activity-evidence-unverified"]},
-                "kind": {"enum": ["case", "engagement", "evidence", "exercise", "finding", "simulation-result"]},
+                "code": {"enum": ["symbolic-link-skipped", "input-entry-limit", "unreadable-or-malformed-json", "unsupported-record", "invalid-record", "unsafe-identifier", "conflicting-id", "duplicate-id", "no-usable-records", "unresolved-reference", "evidence-integrity-unresolved", "timestamp-or-timezone-unknown", "finding-evidence-unverified", "finding-guard-unrecorded", "unsafe-step-id", "duplicate-step-id", "exercise-timing-unresolved", "exercise-evidence-unverified", "outcome-disagreement", "coverage-denominator-unavailable", "simulation-outcome-unresolved", "scope-unsupplied", "case-activity-evidence-unverified"]},
+                "kind": {"enum": ["case", "engagement", "evidence", "exercise", "finding", "run", "simulation-result"]},
                 "id": {
                   "type": "string",
                   "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
                 },
-                "targetKind": {"enum": ["case", "engagement", "evidence", "exercise", "finding", "simulation-result"]},
+                "targetKind": {"enum": ["case", "engagement", "evidence", "exercise", "finding", "run", "simulation-result"]},
                 "reference": {
                   "type": "string",
                   "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
                 },
                 "inputIndex": {"type": "integer", "minimum": 0}
+              }
+            }
+          },
+          "runs": {
+            "type": "array",
+            "items": {
+              "type": "object", "additionalProperties": false, "required": ["id", "workflow", "stages"],
+              "properties": {
+                "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"},
+                "workflow": {"enum": ["workspace", "scan-report"]},
+                "stages": {
+                  "type": "object", "additionalProperties": false, "required": ["workspace"],
+                  "properties": {
+                    "workspace": {
+                      "type": "object", "additionalProperties": false, "required": ["status"],
+                      "properties": {
+                        "status": {"const": "completed"}
+                      }
+                    },
+                    "scan": {
+                      "type": "object", "additionalProperties": false, "required": ["status"],
+                      "properties": {
+                        "status": {"enum": ["completed", "partial", "not_run", "failed"]},
+                        "reason": {"enum": ["rules-unavailable", "registry-disabled", "scanner-unavailable", "scanner-timeout", "scanner-error"]}
+                      }
+                    },
+                    "audit": {
+                      "type": "object", "additionalProperties": false, "required": ["status"],
+                      "properties": {
+                        "status": {"enum": ["completed", "partial", "not_run", "failed"]},
+                        "reason": {"enum": ["specialist-unavailable", "evidence-incomplete", "validation-failed"]}
+                      }
+                    },
+                    "report": {
+                      "type": "object", "additionalProperties": false, "required": ["status"],
+                      "properties": {
+                        "status": {"enum": ["completed", "partial", "not_run", "failed"]},
+                        "reason": {"enum": ["specialist-unavailable", "evidence-incomplete", "validation-failed"]}
+                      }
+                    }
+                  }
+                }
               }
             }
           },

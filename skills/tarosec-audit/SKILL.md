@@ -4,7 +4,7 @@ description: Audit application source, authentication and authorization, depende
 license: MIT
 metadata:
   suite: tarosec
-  version: "0.1.0"
+  version: "0.3.0"
 ---
 
 # Tarosec Audit — Security Auditor
@@ -20,6 +20,7 @@ assess. Read [authorization](references/shared/authorization.md),
 | --- | --- |
 | `quick` (default) | Triage exposed/privileged paths, secrets, dangerous config; list deferred coverage. |
 | `deep` | Trace all applicable boundaries in scope; enumerate uninspected areas. |
+| `diff` | Review a supplied change or ref range and the callers and safeguards it affects. See [differential review](references/differential-review.md). |
 | `dependencies` | Triage dependency/advisory reports against resolved versions and paths. See [dependencies](references/dependencies.md). |
 | `agents` | Skills, prompts, hooks, MCP/tool definitions and their permission paths. See [agents](references/agents.md). |
 | `verify` | Re-check supplied findings against current source; keep original IDs. |
@@ -35,11 +36,20 @@ assess. Read [authorization](references/shared/authorization.md),
 3. **Validate safely.** Use a static trace or review a supplied regression result. Never run
    untrusted install scripts, hooks or audited skills to see if they're safe;
    never test a found credential against its provider.
+   For a serious candidate, make a second pass for a reachable safeguard or
+   contradictory evidence. Keep the result inconclusive when a missing policy
+   or deployment fact can decide it. Record the safeguard checked, the evidence
+   references, and any limitation before classifying a source finding as verified.
 4. **Rank and reconcile.** One root cause = one finding. Severity (with rationale)
    and confidence are separate; no fabricated CVSS. Map CWE/ASVS 5.0 only when the
    requirement is verified.
 5. **Report coverage honestly.** Inspected, not applicable (with evidence), or
-   unverified for each requested area. Failed or unrun scanners are Not Run.
+   unverified for each requested area. Keep failed and unrun scans distinct.
+
+Load a focused guide when the scope warrants it. Use [tenant isolation](references/tenant-isolation.md)
+for shared data boundaries, [document intake](references/document-intake.md) for
+PDF and OCR ingestion, and [agent and MCP review](references/agents.md) for tool
+permissions and untrusted context.
 
 For `verify`, cite the original finding and evidence, the current revision,
 the control now enforcing the invariant, and any supplied regression evidence.
@@ -64,14 +74,20 @@ and location. Optional JSON uses `assets/schemas/finding.schema.json` with
 `producer: tarosec-audit`. Read-only by default: source fixes, scanner installs,
 uploads, commits and pushes need explicit authorization. `tarosec-red` can reuse
 the finding ID when checking supplied assessment evidence.
+Set `guardChecked` to the control and cited location reviewed, and use
+`limitations` for unresolved conditions. Use `False positive` when evidence
+supports rejecting the lead. For ASVS, record the version and requirement ID
+and explain its applicability without inferring project-wide compliance.
 
 ## Project workspace
 
-Save every scan result, finding, evidence file and report under
+For requested file output, save scan results, findings, evidence and reports under
 `.tarosec/workspace/` in the assessed project. Reuse the run directory passed
 by the dispatcher. Otherwise, run the bundled
 `scripts/init_workspace.py PROJECT --skill tarosec-audit` with Python 3.10+. It creates
-`.tarosec/README.md`, adds `.tarosec/workspace/` to `.gitignore`, and prints
-the new run directory. Use `--output-dir` only when the user names another
+`.tarosec/README.md` and prints the new run directory. Pass
+`--update-gitignore` only when the user requests a Git ignore entry. Use `--output-dir` only when the user names another
 existing location. Never write scan output elsewhere in the project. Report the created directory and saved
 files, or the initialization error. Keep answer-only requests in chat.
+When the run includes a `run.json` manifest, record the Audit stage outcome in
+it after checking the output. Keep any existing stage outcomes intact.

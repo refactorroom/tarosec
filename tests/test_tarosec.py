@@ -39,6 +39,14 @@ class SkillFormat(unittest.TestCase):
                          ["tarosec", "tarosec-audit", "tarosec-blue", "tarosec-git-issues", "tarosec-purple",
                           "tarosec-red", "tarosec-report", "tarosec-simulate"])
 
+    def test_release_metadata_matches_packaged_skills(self):
+        version = load(ROOT / "package.json")["version"]
+        self.assertEqual(load(ROOT / ".claude-plugin/plugin.json")["version"], version)
+        self.assertRegex((ROOT / "CHANGELOG.md").read_text(), rf"(?m)^## {re.escape(version)} \(")
+        for skill in SKILLS:
+            with self.subTest(skill=skill.name):
+                self.assertRegex((skill / "SKILL.md").read_text(), rf'(?m)^  version: "{re.escape(version)}"$')
+
     def test_frontmatter_matches_spec(self):
         for skill in SKILLS:
             fm = frontmatter((skill / "SKILL.md").read_text())

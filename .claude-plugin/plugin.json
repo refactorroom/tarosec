@@ -1,6 +1,6 @@
 {
   "name": "tarosec",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Offline cybersecurity skills for source audit, assessment scope review, defensive investigation, detection validation and reporting.",
   "author": {
     "name": "akkaraponph"

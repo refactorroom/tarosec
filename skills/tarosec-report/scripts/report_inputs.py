@@ -15,7 +15,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from validate_record import load_json, validate
 
 SCHEMAS = Path(__file__).resolve().parent.parent / "assets" / "schemas"
-KINDS = ("case", "engagement", "evidence", "exercise", "finding", "simulation-result")
+KINDS = ("case", "engagement", "evidence", "exercise", "finding", "run", "simulation-result")
 MAX_ENTRIES = 2000
 MAX_RECORD_BYTES = 1024 * 1024
 MAX_ARTIFACT_BYTES = 32 * 1024 * 1024

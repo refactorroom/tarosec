@@ -24,6 +24,16 @@ Select all skills with `--skill '*'`, or substitute `tarosec-audit`,
 `.agents/skills/`. With `--copy` and the Claude Code agent selected, it also
 copies them into `.claude/skills/`. Restart the agent after installing.
 
+For `scan-report`, install the dispatcher, Audit, and Report into the project.
+From the target project, point the installer at a local Tarosec checkout.
+
+```bash
+npx skills@1.9.0 add /path/to/tarosec --skill tarosec tarosec-audit tarosec-report --agent codex claude-code --copy -y
+```
+
+Then follow the [offline scan quickstart](../skills/tarosec/references/scan-report.md#offline-quickstart)
+to set up a demo rules file before trying an application scan.
+
 ## Report specialist
 
 Install from a checkout containing Report.
@@ -36,7 +46,7 @@ The GitHub selector is `npx skills add refactorroom/tarosec --skill tarosec-repo
 
 ## GitHub installation and updates
 
-The public `refactorroom/tarosec` repository contains seven skills in v0.2.0.
+Use the `--list` output to see which skills the fetched revision provides.
 
 ```bash
 npx skills@1.9.0 add refactorroom/tarosec --list
@@ -55,19 +65,20 @@ global copy.
 
 ## npm package
 
-The published npm package is v0.1.0 and contains six skills. To use v0.2.0,
-install from GitHub as shown above. Install the npm package and sync its skills
-into your Codex project with:
+For a published version, install the npm package and sync its skills into your
+Codex project. This example pins the historical 0.1.0 package.
 
 ```bash
 npm install tarosec@0.1.0
 npx skills@1.9.0 experimental_sync --copy --agent codex
 ```
 
-The first command downloads the six skill directories and Python helpers into
+The first command downloads that version's skill directories and Python helpers into
 `node_modules/tarosec/skills/`. The second copies skills from your project's npm
 dependencies into `.agents/skills/` for Codex. Run the sync again after updating
 the package. For a direct GitHub install, use `npx skills add refactorroom/tarosec`.
+To try an unreleased checkout through npm, run `npm pack` in that checkout,
+install the resulting tarball in a disposable project, and run the same sync command.
 
 ## Other installation paths
 

@@ -60,6 +60,47 @@ class Reporting(unittest.TestCase):
         self.assertEqual(result["evidence"][0]["artifactCheck"], "match")
         self.assertEqual(self.gaps(result, "unresolved-reference")[0]["reference"], "EV-EXPORT-MISSING")
 
+    def test_source_assessment_preserves_guarded_rejected_and_inconclusive_outcomes(self):
+        path = self.records / "finding.json"
+        original = read(path)
+        for status, verification, guard, assessment, gap in [
+            ("Verified vulnerability", "confirmed", "Policy review found the predicate absent", "Confirmed", False),
+            ("False positive", "unverified", "Default query adds the tenant predicate", "Confirmed", False),
+            ("Verified vulnerability", "confirmed", None, "Unknown", True),
+            ("Potential weakness", "inconclusive", "Effective database policy was unavailable", "Unknown", False),
+        ]:
+            with self.subTest(status=status, guard=guard):
+                finding = {**original, "producer": "tarosec-audit", "status": status,
+                           "claimStrength": "static-trace", "confidence": "Confirmed",
+                           "verificationStatus": verification,
+                           "evidenceRefs": ["EV-ALERT-01"]}
+                if guard:
+                    finding["guardChecked"] = guard
+                write(path, finding)
+                output = self.snapshot()
+                row = output["findings"][0]
+                self.assertEqual(row["confidence"], "Confirmed")
+                self.assertEqual(row["assessmentConfidence"], assessment)
+                self.assertEqual(bool(self.gaps(output, "finding-guard-unrecorded")), gap)
+
+    def test_report_reads_both_run_layouts_and_legacy_records(self):
+        self.assertNotIn("runs", self.snapshot())
+        for layout, workflow, stages in [
+            ("workspace", "workspace", {"workspace": {"status": "completed"}}),
+            ("reports", "scan-report", {"workspace": {"status": "completed"},
+                                       "scan": {"status": "completed"}, "audit": {"status": "completed"},
+                                       "report": {"status": "not_run", "reason": "specialist-unavailable"}}),
+        ]:
+            with self.subTest(layout=layout):
+                run = self.root / ".tarosec" / layout / "run-control"
+                shutil.copytree(self.records, run)
+                source = {"id": "run-control", "workflow": workflow, "stages": stages}
+                write(run / "run.json", {"schemaVersion": "tarosec.run/v1", **source})
+                report = build_report(run, "technical")
+                self.assertEqual(validate_report(report), [])
+                self.assertEqual(report["snapshots"][0]["runs"], [source])
+                self.assertEqual(len(report["snapshots"][0]["findings"]), 1)
+
     def test_duplicates_conflicts_and_invalid_records(self):
         path = self.records / "finding.json"
         data = read(path)

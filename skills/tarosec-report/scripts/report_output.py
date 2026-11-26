@@ -10,6 +10,7 @@ from validate_record import validate
 GAP_READINGS = {
     "unresolved-reference": "Referenced record is missing or conflicting",
     "finding-evidence-unverified": "Finding lacks fully checked supporting evidence",
+    "finding-guard-unrecorded": "Source finding lacks a recorded review of the applicable safeguard",
     "evidence-integrity-unresolved": "Artifact integrity needs review",
     "coverage-denominator-unavailable": "No steps qualify for the detection denominator",
     "scope-unsupplied": "No usable engagement scope was supplied",
@@ -36,6 +37,12 @@ def markdown(report):
         for scope in snapshot["scope"]:
             lines.append(f"- Engagement `{scope['id']}` lists {scope['assetCount']} "
                          f"targets in {scope['environment']} ({scope['windowStart']} to {scope['windowEnd']}).")
+        if snapshot.get("runs"):
+            lines += ["", "### Recorded workflow stages", ""]
+            for run in snapshot["runs"]:
+                for name, stage in sorted(run["stages"].items()):
+                    reason = f" ({stage['reason']})" if "reason" in stage else ""
+                    lines.append(f"- `{run['id']}` {name}: {stage['status']}{reason}.")
         if mode in MODES_WITH_FINDINGS and snapshot["findings"]:
             lines += ["", "### Findings", ""]
             for row in snapshot["findings"]:
@@ -155,8 +162,9 @@ def validate_report(report):
             errors.append("reported metrics are inconsistent with reported rows")
         source_ids = {(row["kind"], row["id"]) for row in snapshot["sources"]}
         for kind, key in (("finding", "findings"), ("case", "cases"), ("evidence", "evidence"),
-                          ("exercise", "exercises"), ("engagement", "scope"), ("simulation-result", "simulations")):
-            ids = [row["id"] for row in snapshot[key]]
+                          ("exercise", "exercises"), ("engagement", "scope"), ("simulation-result", "simulations"),
+                          ("run", "runs")):
+            ids = [row["id"] for row in snapshot.get(key, [])]
             if len(set(ids)) != len(ids) or any((kind, ref) not in source_ids for ref in ids):
                 errors.append(f"inconsistent {kind} provenance")
         evidence_ids = {row["id"] for row in snapshot["evidence"]}

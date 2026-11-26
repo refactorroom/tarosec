@@ -20,3 +20,10 @@ evidence that the host would execute it.
 
 Broad capabilities and quoted attack examples in documentation are not
 vulnerabilities by themselves.
+
+For a permitted tool call, trace its data and destination separately from
+permission to invoke the tool. Inspect whether workspace files, tool results,
+existing reports, or retrieval output can influence either. Check what the
+server independently enforces when the host's input filtering is absent.
+Keep runtime limitations and private evidence in the local finding record.
+See [OWASP Secure Agent Playbook MCP review](https://github.com/OWASP/secure-agent-playbook/blob/main/plugins/ai-security-skills/plays/mcp-server-review.md).

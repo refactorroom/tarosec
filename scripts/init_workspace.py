@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Create a unique Tarosec run directory and print its path.
 
-By default runs are created under PROJECT/.tarosec/workspace/. The helper also
-writes PROJECT/.tarosec/README.md when it is missing and makes sure the
-project's .gitignore ignores .tarosec/workspace/.
+By default runs are created under PROJECT/.tarosec/workspace/. Updating
+the project's .gitignore requires --update-gitignore.
 """
 import argparse
+import json
 import os
 import sys
 import tempfile
@@ -24,8 +24,8 @@ Tarosec stores security work for this project here.
 
 - `workspace/` holds one directory per run, such as `tarosec-audit-XXXX/`.
   Every Tarosec skill saves scan results, findings, evidence and reports there.
-  It is listed in `.gitignore` because runs can contain sensitive data.
-  Review a run before you copy anything out of it or share it.
+  Use `--update-gitignore` to ignore the run directory in Git. Review a run
+  before copying or sharing it because it may contain sensitive data.
 
 Delete old runs when you no longer need them. Tarosec recreates `workspace/`
 on the next run.
@@ -52,21 +52,31 @@ def ensure_readme(base):
         readme.write_text(README, encoding="utf-8", newline="\n")
 
 
-def ensure_ignored(project):
+def ensure_ignored(project, entry=IGNORE_ENTRY):
     ignore = project / ".gitignore"
-    if ignore.is_symlink():
-        raise ValueError(".gitignore must not be a symbolic link")
+    if ignore.is_symlink() or (ignore.exists() and not ignore.is_file()):
+        raise ValueError(".gitignore must be a regular file")
     data = ignore.read_bytes() if ignore.exists() else b""
     lines = data.decode("utf-8", errors="replace").splitlines()
-    if any(line.strip() in IGNORE_MATCHES for line in lines):
+    matches = IGNORE_MATCHES if entry == IGNORE_ENTRY else {entry, entry.lstrip("/")}
+    if any(line.strip() in matches for line in lines):
         return
     newline = b"\r\n" if b"\r\n" in data else b"\n"
     prefix = b"" if not data or data.endswith((b"\n", b"\r")) else newline
     with ignore.open("ab") as file:
-        file.write(prefix + b"# Tarosec run output" + newline + IGNORE_ENTRY.encode() + newline)
+        file.write(prefix + b"# Tarosec run output" + newline + entry.encode() + newline)
 
 
-def initialize(project, skill, output_dir=None):
+def write_manifest(run, workflow, stages):
+    manifest = {"schemaVersion": "tarosec.run/v1", "id": run.name,
+                "workflow": workflow, "stages": stages}
+    with tempfile.TemporaryDirectory(dir=run) as staging:
+        temporary = Path(staging) / "run.json"
+        temporary.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+        os.replace(temporary, run / "run.json")
+
+
+def initialize(project, skill, output_dir=None, update_gitignore=False):
     project = Path(project).resolve(strict=True)
     if not project.is_dir():
         raise ValueError("project must be an existing directory")
@@ -76,12 +86,17 @@ def initialize(project, skill, output_dir=None):
         base = safe_directory(project / ".tarosec")
         ensure_readme(base)
         parent = safe_directory(base / "workspace")
-        ensure_ignored(project)
     else:
         parent = Path(output_dir).resolve(strict=True)
         if not parent.is_dir():
             raise ValueError("output must be an existing directory")
-    return Path(tempfile.mkdtemp(prefix=f"{skill}-", dir=parent))
+    if update_gitignore:
+        if output_dir is not None:
+            raise ValueError("--update-gitignore applies only to the default workspace")
+        ensure_ignored(project)
+    run = Path(tempfile.mkdtemp(prefix=f"{skill}-", dir=parent))
+    write_manifest(run, "workspace", {"workspace": {"status": "completed"}})
+    return run
 
 
 def main():
@@ -90,9 +105,10 @@ def main():
     parser.add_argument("--skill", required=True, choices=SKILLS)
     parser.add_argument("--output-dir", type=Path,
                         help="existing parent directory (default: PROJECT/.tarosec/workspace)")
+    parser.add_argument("--update-gitignore", action="store_true", help="ignore the default workspace in Git")
     args = parser.parse_args()
     try:
-        print(initialize(args.project, args.skill, args.output_dir))
+        print(initialize(args.project, args.skill, args.output_dir, args.update_gitignore))
     except (OSError, RuntimeError, ValueError) as error:
         print(f"Initialization failed: {error}", file=sys.stderr)
         return 1

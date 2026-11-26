@@ -2,6 +2,8 @@
 """Run local Semgrep and collect inputs for the Tarosec review."""
 
 import argparse
+from datetime import datetime, timezone
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -11,14 +13,13 @@ import subprocess
 import sys
 import tempfile
 
-from init_workspace import safe_directory
+from init_workspace import ensure_ignored, safe_directory, write_manifest
 from validate_record import load_json
 
 
-IGNORE_ENTRY = "/.tarosec/"
 MAX_EXTERNAL_REPORT_BYTES = 1024 * 1024
 DEFAULT_SEMGREP = {
-    "rulesets": ["p/security-audit"],
+    "rulesets": [".tarosec/rules/semgrep.yml"],
     "exclude": [],
     "jobs": 2,
     "timeoutSeconds": 300,
@@ -62,31 +63,19 @@ def scan_settings(path):
     return options
 
 
-def semgrep_configs(project, rulesets, override):
+def semgrep_configs(project, rulesets, override, allow_registry):
     configs = []
     for ruleset in [override] if override is not None else rulesets:
         if isinstance(ruleset, str) and re.fullmatch(r"p/[a-zA-Z0-9_.-]+", ruleset):
+            if not allow_registry:
+                return [], "registry-disabled"
             configs.append(ruleset)
             continue
-        path = (project / ruleset if isinstance(ruleset, str) else ruleset).resolve(strict=True)
+        path = (project / ruleset if isinstance(ruleset, str) else ruleset).resolve()
         if not path.is_file():
-            raise ValueError("a Semgrep ruleset must be a public p/ pack or an existing local rule file")
+            return [], "rules-unavailable"
         configs.append(str(path))
-    return configs
-
-
-def ignore_workspace(project):
-    path = project / ".gitignore"
-    if path.is_symlink() or (path.exists() and not path.is_file()):
-        raise ValueError(".gitignore must be a regular file")
-    existing = path.read_bytes() if path.exists() else b""
-    if IGNORE_ENTRY.encode() in existing.splitlines():
-        return
-    newline = b"\r\n" if b"\r\n" in existing else b"\n"
-    with path.open("ab") as stream:
-        if existing and not existing.endswith(b"\n"):
-            stream.write(newline)
-        stream.write(IGNORE_ENTRY.encode() + newline)
+    return configs, None
 
 
 def external_report(path):
@@ -99,8 +88,8 @@ def external_report(path):
     return content.decode("utf-8")
 
 
-def summarize(run, exit_code, external):
-    status = "Failed or incomplete"
+def summarize(run, exit_code, external, reason):
+    status = "not_run" if reason in {"registry-disabled", "rules-unavailable", "scanner-unavailable"} else "failed"
     counts = []
     try:
         scan = json.loads((run / "semgrep.json").read_text(encoding="utf-8"))
@@ -110,16 +99,29 @@ def summarize(run, exit_code, external):
         counts = [f"- Files scanned: {scanned}", f"- Candidate alerts: {candidates}",
                   f"- Scanner diagnostics: {warnings}"]
         if exit_code == 0 and (run / "semgrep.sarif").is_file():
-            status = "Completed" if scanned and not warnings else "Completed with coverage limitations"
+            status = "completed" if scanned and not warnings else "partial"
     except (OSError, ValueError, KeyError, TypeError):
         pass
     lines = ["# Static scan evidence", "", f"- Semgrep: {status}", *counts]
+    if reason:
+        lines.append(f"- Scanner status detail: {reason}")
     if exit_code is not None:
         lines.append(f"- Semgrep exit code: {exit_code}")
     lines.append("- Existing Claude-BugHunter report: " + ("supplied" if external else "not supplied"))
     lines += ["", "Source and external claims require review. See `semgrep.log` for scanner diagnostics."]
     (run / "scan-summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    return status != "Failed or incomplete"
+    return {"status": status, **({"reason": reason} if reason else {})}
+
+
+def record_evidence(run, filename, source):
+    artifact = run / filename
+    record = {"schemaVersion": "tarosec.evidence/v1", "id": f"{run.name}-{artifact.stem}",
+              "source": source, "collectionMethod": "local scan-report run",
+              "collectedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+              "originalTimezone": "UTC", "artifactPath": filename,
+              "sha256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
+              "sensitivity": "internal", "integrity": "hash-recorded"}
+    (run / f"{artifact.stem}.evidence.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
 
 
 def main():
@@ -127,6 +129,8 @@ def main():
     parser.add_argument("project", type=Path)
     parser.add_argument("--bughunter-report", type=Path, help="existing sanitized Markdown or text report")
     parser.add_argument("--config", type=Path, help="trusted local Semgrep rule file")
+    parser.add_argument("--allow-registry", action="store_true", help="allow retrieval of configured public rule packs")
+    parser.add_argument("--update-gitignore", action="store_true", help="add /.tarosec/ to the project ignore file")
     args = parser.parse_args()
     try:
         project = args.project.resolve(strict=True)
@@ -134,39 +138,61 @@ def main():
             raise ValueError("project must be an existing directory")
         report = external_report(args.bughunter_report) if args.bughunter_report else None
         workspace = safe_directory(project / ".tarosec")
-        ignore_workspace(project)
+        if args.update_gitignore:
+            ensure_ignored(project, "/.tarosec/")
         settings = scan_settings(workspace / "tarosec.json")
-        settings["rulesets"] = semgrep_configs(project, settings["rulesets"], args.config)
+        configs, reason = semgrep_configs(project, settings["rulesets"], args.config, args.allow_registry)
+        if args.config:
+            settings["rulesets"] = [str(args.config.resolve())]
         settings["exclude"] = list(dict.fromkeys([".tarosec", *settings["exclude"]]))
+        settings.update(resolvedRulesets=configs, registryAllowed=args.allow_registry)
         reports = safe_directory(workspace / "reports")
         run = Path(tempfile.mkdtemp(prefix="run-", dir=reports))
+        stages = {"workspace": {"status": "completed"}, "scan": {"status": "not_run"},
+                  "audit": {"status": "not_run"}, "report": {"status": "not_run"}}
+        write_manifest(run, "scan-report", stages)
         print(run, flush=True)
         (run / "scan-settings.json").write_text(json.dumps(settings, indent=2) + "\n", encoding="utf-8")
         if report is not None:
             (run / "bughunter-report.md").write_text(report, encoding="utf-8")
+            record_evidence(run, "bughunter-report.md", "Supplied external report")
         semgrep = shutil.which("semgrep")
         exit_code = None
         with (run / "semgrep.log").open("wb") as log:
-            if not semgrep:
+            if reason:
+                log.write(f"Semgrep did not run: {reason}.\n".encode())
+            elif not semgrep:
+                reason = "scanner-unavailable"
                 log.write(b"Semgrep executable was not found on PATH.\n")
             else:
                 command = [semgrep, "scan", "--oss-only", "--metrics=off", "--disable-version-check",
                            "--jobs", str(settings["jobs"]),
                            "--json-output", str(run / "semgrep.json"),
                            "--sarif-output", str(run / "semgrep.sarif")]
-                for ruleset in settings["rulesets"]:
+                for ruleset in configs:
                     command.extend(("--config", ruleset))
                 for exclude in settings["exclude"]:
                     command.append(f"--exclude={exclude}")
+                scanner_env = {**os.environ, "SEMGREP_LOG_FILE": str(run / "semgrep-internal.log"),
+                               "SEMGREP_SETTINGS_FILE": str(run / "semgrep-user-settings.yml")}
+                # Sandboxed macOS processes can read the PEM bundle without keychain access.
+                macos_ca_bundle = Path("/etc/ssl/cert.pem")
+                if sys.platform == "darwin" and macos_ca_bundle.is_file():
+                    scanner_env.setdefault("SSL_CERT_FILE", str(macos_ca_bundle))
                 try:
                     result = subprocess.run([*command, "."], cwd=project, stdout=log, stderr=log,
-                                            timeout=settings["timeoutSeconds"])
+                                            timeout=settings["timeoutSeconds"], env=scanner_env)
                     exit_code = result.returncode
                 except subprocess.TimeoutExpired:
+                    reason = "scanner-timeout"
                     log.write(f"\nSemgrep timed out after {settings['timeoutSeconds']} seconds.\n".encode())
                 except OSError:
+                    reason = "scanner-error"
                     log.write(b"\nSemgrep could not start.\n")
-        return 0 if summarize(run, exit_code, report is not None) else 1
+        stages["scan"] = summarize(run, exit_code, report is not None, reason)
+        record_evidence(run, "scan-summary.md", "Semgrep scan summary")
+        write_manifest(run, "scan-report", stages)
+        return 0 if stages["scan"]["status"] in {"completed", "partial"} else 1
     except (OSError, ValueError) as error:
         parser.exit(2, f"error: {error}\n")
 

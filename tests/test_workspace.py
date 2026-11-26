@@ -34,15 +34,15 @@ class WorkspaceTests(unittest.TestCase):
         self.assertTrue(directory.is_dir())
         self.assertEqual(directory.parent, (self.project / ".tarosec/workspace").resolve())
         self.assertTrue((self.project / ".tarosec/README.md").is_file())
-        self.assertEqual(ignore.read_bytes(),
-                         b"*.log\r\n!important.log\r\n# Tarosec run output\r\n/.tarosec/workspace/\r\n")
+        self.assertEqual(ignore.read_bytes(), b"*.log\r\n!important.log")
+        self.assertTrue((directory / "run.json").is_file())
 
     def test_default_is_idempotent(self):
         readme = self.project / ".tarosec"
         for _ in range(2):
-            self.assertEqual(run(self.project).returncode, 0)
+            self.assertEqual(run(self.project, "--update-gitignore").returncode, 0)
         (readme / "README.md").write_text("custom")
-        self.assertEqual(run(self.project).returncode, 0)
+        self.assertEqual(run(self.project, "--update-gitignore").returncode, 0)
         self.assertEqual((readme / "README.md").read_text(), "custom")
         ignore = (self.project / ".gitignore").read_text()
         self.assertEqual(ignore.count("/.tarosec/workspace/"), 1)

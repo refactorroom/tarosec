@@ -1,0 +1,6 @@
+rules:
+  - id: tarosec-demo-marker
+    languages: [python]
+    message: Harmless marker for the Tarosec offline quickstart.
+    severity: INFO
+    pattern: print("tarosec-scan-report-demo")

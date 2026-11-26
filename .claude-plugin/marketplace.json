@@ -3,6 +3,6 @@
   "owner": {"name": "akkaraponph"},
   "metadata": {"description": "Tarosec cybersecurity skill suite"},
   "plugins": [
-    {"name": "tarosec", "source": "./", "description": "Audit, Red, Blue and Purple team security skills", "category": "security"}
+    {"name": "tarosec", "source": "./", "description": "Offline audit, scan reporting, evidence review, investigation, and detection validation", "category": "security"}
   ]
 }

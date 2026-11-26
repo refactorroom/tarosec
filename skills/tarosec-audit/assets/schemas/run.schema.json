@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tarosec:run:v1",
+  "title": "Tarosec run manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "workflow", "stages"],
+  "properties": {
+    "schemaVersion": {"const": "tarosec.run/v1"},
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"},
+    "workflow": {"enum": ["workspace", "scan-report"]},
+    "stages": {
+      "type": "object", "additionalProperties": false, "required": ["workspace"],
+      "properties": {
+        "workspace": {
+          "type": "object", "additionalProperties": false, "required": ["status"],
+          "properties": {
+            "status": {"const": "completed"}
+          }
+        },
+        "scan": {
+          "type": "object", "additionalProperties": false, "required": ["status"],
+          "properties": {
+            "status": {"enum": ["completed", "partial", "not_run", "failed"]},
+            "reason": {"enum": ["rules-unavailable", "registry-disabled", "scanner-unavailable", "scanner-timeout", "scanner-error"]}
+          }
+        },
+        "audit": {
+          "type": "object", "additionalProperties": false, "required": ["status"],
+          "properties": {
+            "status": {"enum": ["completed", "partial", "not_run", "failed"]},
+            "reason": {"enum": ["specialist-unavailable", "evidence-incomplete", "validation-failed"]}
+          }
+        },
+        "report": {
+          "type": "object", "additionalProperties": false, "required": ["status"],
+          "properties": {
+            "status": {"enum": ["completed", "partial", "not_run", "failed"]},
+            "reason": {"enum": ["specialist-unavailable", "evidence-incomplete", "validation-failed"]}
+          }
+        }
+      }
+    }
+  }
+}
